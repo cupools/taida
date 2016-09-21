@@ -1,13 +1,11 @@
 {
+  "root": true,  
   "parser": "babel-eslint",
-
   "extends": "airbnb",
-
-  env: {
-    node: true,
-    commonjs: true
+  "env": {
+    "node": true,
+    "commonjs": true
   },
-
   "rules": {
     "indent": ["error", 2, {"SwitchCase": 1}],
     "func-names": 0,
@@ -18,6 +16,8 @@
     "prefer-const": 0,
     "no-use-before-define": 0,
     "arrow-parens": 0,
-    'prefer-template': 0
+    "prefer-template": 0,
+
+    "import/no-unresolved": 0
   }
 }
