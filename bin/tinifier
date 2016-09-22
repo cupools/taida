@@ -23,7 +23,7 @@ if (program.pattern) {
             // mark end
             return ret.concat(null)
           } else if (ret[0] === null && arg[0] !== '-') {
-            // target arguments
+            // expected arguments
             if (ret.length === 1 || ret[ret.length - 1] !== null) {
               return ret.concat(arg)
             }

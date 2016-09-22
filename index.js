@@ -1,1 +1,1 @@
-module.exports = require('./lib/tinifier').default
+module.exports = require('./lib/index').default
