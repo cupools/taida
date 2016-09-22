@@ -5,22 +5,24 @@ import tinifier from '../tinifier'
 
 export default function (options) {
   let {pattern} = options
-  let resources = pattern.splice ? pattern : glob.sync(pattern || '')
-
-  console.log(resources)
-  return
+  let resources = pattern
+    .map(f => glob.sync(f))
+    .reduce(
+      (ret, arr) => ret.concat(arr),
+      []
+    )
 
   return Promise
     .all(
       resources
-        .map(fs.readFileSync.bind(fs))
+        .map(f => fs.readFileSync(f))
         .map(tinifier)
     )
     .then(
       datas => datas.map(data => {
         return new Promise((resolve, reject) => {
           fs.writeFile(
-            `test/tmp/${Date.now()}.png`,
+            `test/tmp/${Date.now() + Math.random()}.png`,
             data,
             err => (err ? reject(err) : resolve(data))
           )

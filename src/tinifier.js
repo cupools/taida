@@ -5,14 +5,13 @@ import apikey from './extend/apikey'
 const tinifier = function (buffer) {
   tinify.key = apikey.get()
 
-  return new Promise((resolve, reject) => {
-    return tinify.fromBuffer(buffer).toBuffer((error, data) => {
-      if (error) {
-        return reject(error)
-      }
-      return resolve(data)
-    })
-  })
+  return new Promise(
+    (resolve, reject) => tinify
+      .fromBuffer(buffer)
+      .toBuffer(
+        (error, data) => (error ? reject(error) : resolve(data))
+      )
+  )
 }
 
 tinifier.apikey = apikey
