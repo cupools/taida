@@ -14,7 +14,6 @@ export default {
       return fs.readFileSync(DB_PATH, option)
     } catch (e) {
       fs.writeFileSync(DB_PATH, '', option)
-
       return null
     }
   },

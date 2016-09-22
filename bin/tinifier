@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+'use strict'
+
+var program = require('commander')
+var PKG = require('../package.json')
+var main = require('../lib/cmd/main').default
+
+program
+  .version(PKG.version)
+  .option('-p, --pattern [globs...]', 'glob pattern for images filepath to compress')
+  .option('-d, --dest [path]', 'directory path to save compressed images')
+  .parse(process.argv)
+
+if (program.pattern) {
+  return main({
+    pattern: program.pattern
+  })
+}
