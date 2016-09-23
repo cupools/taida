@@ -7,11 +7,16 @@ import tinifier from '../src/index'
 
 describe('index', function () {
   this.timeout(10e4)
+  this.beforeEach(function () {
+    fs.copySync('test/fixtures', 'test/tmp')
+  })
 
   it('should work', function (done) {
-    let buffer = fs.readFileSync('test/fixtures/0.png')
+    let option = {
+      pattern: 'test/tmp/0.png'
+    }
 
-    tinifier(buffer)
+    tinifier(option)
       .then(data => {
         done()
       })

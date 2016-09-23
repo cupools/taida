@@ -12,6 +12,7 @@ program
   .parse(process.argv)
 
 if (program.pattern) {
+  // get correct filepath array
   let pattern = program.rawArgs
       .slice(2)
       .reduce(

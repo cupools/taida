@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "rm -rf lib && node node_modules/babel-cli/bin/babel src -d lib -D -w",
-    "test": "cross-env NODE_ENV=dev node_modules/.bin/nyc --reporter lcov --reporter text --report-dir test/coverage --require babel-core/register node_modules/.bin/mocha test/*.spec.js && rm -rf .nyc_output"
+    "test": "cross-env NODE_ENV=dev node_modules/.bin/nyc --reporter lcov --reporter text --report-dir test/coverage --require babel-core/register node_modules/.bin/mocha test/index.spec.js && rm -rf .nyc_output"
   },
   "repository": {
     "type": "git",
@@ -31,6 +31,8 @@
     "commander": "^2.9.0",
     "fs-extra": "^0.30.0",
     "glob": "^7.1.0",
+    "ramda": "^0.22.1",
+    "ramda-fantasy": "^0.7.0",
     "tinify": "^1.3.0"
   },
   "devDependencies": {
