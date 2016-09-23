@@ -19,8 +19,12 @@ log.error = function (msg) {
   log('[error]: ' + colors.red(msg))
 }
 
-log.build = function (path, level) {
-  log.info('Compress ' + colors.green(path + ' => ' + (1 - level) * 100 + '%'))
+log.build = function (path) {
+  log.info('Compress ' + path)
+}
+
+log.statistic = function (msg) {
+  log.info(msg.replace(/__([^_]+?)__/g, (match, $1) => colors.green($1)))
 }
 
 log.state = function (quiet) {
