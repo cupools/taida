@@ -9,11 +9,12 @@ program
   .version(PKG.version)
   .option('-p, --pattern [globs...]', 'glob pattern for images filepath to compress')
   .option('-d, --dest [path]', 'directory path to save compressed images')
+  .option('    --detail [boolean]', 'show more detail')
   .parse(process.argv)
 
 if (program.pattern) {
   // get correct filepath array
-  let pattern = program.rawArgs
+  var pattern = program.rawArgs
       .slice(2)
       .reduce(
         (ret, arg) => {
@@ -35,7 +36,12 @@ if (program.pattern) {
       )
       .filter(arg => !!arg)
 
+  var dest = program.dest
+  var detail = program.detail
+
   return main({
-    pattern
+    pattern: pattern,
+    dest: dest,
+    detail: detail
   })
 }

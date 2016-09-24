@@ -1,8 +1,9 @@
 import tinify from 'tinify'
 
 import apikey from './extend/apikey'
+import log from './utils/log'
 
-const tinifier = function(buffer) {
+const tinifier = function (buffer) {
   tinify.key = apikey.get()
 
   return new Promise(
@@ -23,5 +24,6 @@ const tinifier = function(buffer) {
 }
 
 tinifier.apikey = apikey
+tinifier.logger = log
 
 export default tinifier

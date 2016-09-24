@@ -8,15 +8,15 @@ const log = function (msg) {
 }
 
 log.info = function (msg) {
-  log('[info]: ' + msg)
+  log('  ' + msg)
 }
 
 log.warn = function (msg) {
-  log('[warn]: ' + colors.yellow(msg))
+  log('  WARN: ' + colors.yellow(msg))
 }
 
 log.error = function (msg) {
-  log('[error]: ' + colors.red(msg))
+  log('  ERROR: ' + colors.red(msg))
 }
 
 log.build = function (path) {

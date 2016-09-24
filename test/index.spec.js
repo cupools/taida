@@ -13,7 +13,7 @@ describe('index', function () {
 
   it('should work', function (done) {
     let option = {
-      pattern: 'test/tmp/0.png'
+      pattern: 'test/tmp/{1,2,3,bad}.png'
     }
 
     tinifier(option)
