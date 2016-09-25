@@ -8,6 +8,7 @@ import log from './utils/log'
 import progress from './utils/progress'
 
 export default function (options) {
+  // TODO, argument validation
   let {pattern} = options
   let resources = []
     .concat(pattern)

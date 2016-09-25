@@ -4,7 +4,7 @@ import main from '../index'
 import log from '../utils/log'
 import pkg from '../../package.json'
 
-export default function (...args) {
+export default function (options) {
   log(`Tinifier    version: ${pkg.version}`.bold)
 
   let handleError = R.curry(log.error, R.prop('message'))
@@ -19,7 +19,7 @@ export default function (...args) {
     log.statistic(`Compress __${success.length} bitmaps__ successful and ${fails.length} fails.`)
     log.statistic(`From ${fix(originTotal)}kb to ${fix(total)}kb, saving __${fix(1e5 - total / originTotal * 1e5)}%__.`)
 
-    if (args[0].detail) {
+    if (options.detail) {
       log('Results: ')
       success.forEach(img => log.info([img.path, `${fix(img.origin.size)}kb -> ${fix(img.size)}kb`].join(': ')))
     }
@@ -29,7 +29,7 @@ export default function (...args) {
     return Promise.resolve(imgs)
   })
 
-  return main(...args)
+  return main(options)
     .then(statistics)
     .catch(handleError)
 }
