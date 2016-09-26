@@ -6,7 +6,7 @@ program
   .version(PKG.version)
 
 program
-  .command('main', null, {
+  .command('tiny', null, {
     noHelp: true
   })
   .option('-p, --pattern [globs...]', 'glob pattern for images filepath to compress')
@@ -25,8 +25,13 @@ program
   })
 
 program
-  .command('key-add [apikey]')
-  .description('add an apikey')
+  .command('apikey')
+  .description('apikey')
+  .option('-a --add [apikeys...]')
+  .option('-d --del [apikeys...]')
+  .option('   --list')
+  .option('   --edit')
+  .option('   --clear')
   .action(function (apikey) {
     console.log(apikey)
   })
