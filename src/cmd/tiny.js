@@ -4,25 +4,16 @@ import main from './main'
 
 program
   .version(PKG.version)
+  .usage('[command] [options]')
 
 program
-  .command('tiny', null, {
-    noHelp: true
+  .command('compress', 'compression', {
+    noHelp: true,
+    isDefault: true
   })
   .option('-p, --pattern [globs...]', 'glob pattern for images filepath to compress')
   .option('-d, --dest [path]', 'directory path to save compressed images')
   .option('    --detail [boolean]', 'show more detail')
-  .action(function (...args) {
-    let options = args.slice(-1)[0]
-    let {dest, detail} = options
-    let pattern = getCorrectPattern(options)
-
-    main({
-      pattern,
-      dest,
-      detail
-    })
-  })
 
 program
   .command('apikey')
@@ -32,9 +23,6 @@ program
   .option('   --list')
   .option('   --edit')
   .option('   --clear')
-  .action(function (apikey) {
-    console.log(apikey)
-  })
 
 program
   .command('*', null, {
@@ -78,13 +66,4 @@ function getCorrectPattern(options) {
       .filter(arg => !!arg)
   }
   return null
-}
-
-/**
- * Enable `tiny -p *.png` directly
- */
-function hack(argv) {
-  let ret = program.parseOptions(program.normalize(argv.slice(2)))
-  let a = (ret.unknown.length && !ret.args.length) ? [].concat(argv.slice(0, 2), 'main', argv.slice(2)) : argv
-  return a
 }

@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+
+var program = require('commander')
+var PKG = require('../package.json')
+
+program
+  .version(PKG.version)
+  .usage('[command] [options]')
+
+program
+  .command('compress', 'default task', {
+    isDefault: true
+  })
+  .option('-p, --pattern [globs...]', 'glob pattern for images filepath to compress')
+  .option('-d, --dest [path]', 'directory path to save compressed images')
+  .option('    --detail [boolean]', 'show more detail')
+
+program
+  .command('apikey', 'manage apikeys of https://tinypng.com')
+
+program
+  .parse(process.argv)
+
+if (!process.argv.slice(2).length) {
+  program.outputHelp()
+}

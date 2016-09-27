@@ -1,0 +1,49 @@
+#!/usr/bin/env node
+
+var program = require('commander')
+var compress = require('../src/cmd/compress')
+
+program
+  .usage('[option]')
+  .option('-p, --pattern [globs...]', 'glob pattern for images filepath to compress')
+  .option('-d, --dest [path]', 'directory path to save compressed images')
+  .option('    --detail [boolean]', 'show more detail')
+  .parse(process.argv)
+
+var dest = program.dest
+var detail = program.detail
+var pattern = getCorrectPattern(program)
+
+compress({
+  pattern: pattern,
+  dest: dest,
+  detail: detail
+})
+
+function getCorrectPattern(options) {
+  if (options.pattern) {
+    // get correct filepath array
+    return options.rawArgs
+      .slice(3)
+      .reduce(
+        (ret, arg) => {
+          if (arg === '-p' || arg === '--pattern') {
+            // mark start
+            return ret.concat(null)
+          } else if (ret[0] === null && arg[0] === '-') {
+            // mark end
+            return ret.concat(null)
+          } else if (ret[0] === null && arg[0] !== '-') {
+            // expected arguments
+            if (ret.length === 1 || ret[ret.length - 1] !== null) {
+              return ret.concat(arg)
+            }
+          }
+          return ret
+        },
+        []
+      )
+      .filter(arg => !!arg)
+  }
+  return null
+}

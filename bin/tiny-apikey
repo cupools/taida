@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+
+var program = require('commander')
+
+program
+  .usage('[options]')
+  .option('-a --add [apikeys...]')
+  .option('-d --del [apikeys...]')
+  .option('   --list')
+  .option('   --edit')
+  .option('   --clear')
+  .parse(process.argv)
