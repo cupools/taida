@@ -17,7 +17,10 @@ export default function (options) {
     let fix = num => (num / 1000).toFixed(2)
 
     log.statistic(`Compress __${success.length} bitmaps__ successful and ${fails.length} fails.`)
-    log.statistic(`From ${fix(originTotal)}kb to ${fix(total)}kb, saving __${fix(1e5 - total / originTotal * 1e5)}%__.`)
+
+    if (success.length) {
+      log.statistic(`From ${fix(originTotal)}kb to ${fix(total)}kb, saving __${fix(1e5 - total / originTotal * 1e5)}%__.`)
+    }
 
     if (options.detail) {
       log('  Results: ')
