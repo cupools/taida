@@ -2,39 +2,36 @@ import fs from 'fs-extra'
 import path from 'path'
 import child from 'child_process'
 
-import log from '../utils/log'
+import log from './utils/log'
 
-function read(dbpath) {
-  let apikeys = []
-
+function read(keypath) {
   try {
-    let db = fs.readJsonSync(dbpath)
-    apikeys.push(...db.apikeys)
+    let json = fs.readJsonSync(keypath)
+    let {apikeys} = json
 
     if (!apikeys.length) {
       log.warn('No apikeys found.')
-      log.warn('Please run `tiny apikey --add [apikey]` first or `tiny help apikey`.')
-      return false
+      log.warn('$ tiny-apikey --add [key]')
     }
+
+    return apikeys
   } catch (e) {
     if (e.errno === -2) {
       // file not exist
-      write(dbpath)
-
-      log.warn(dbpath + 'has built.')
-      log.warn('Please run `tiny apikey --add [apikey]` first or `tiny help apikey`.')
+      write(keypath)
+      log.warn(keypath + ' has built.')
+      log.warn('$ tiny-apikey --add [key]')
     } else {
       log.error(e.message)
-      log.error('Try `tiny help apikey`')
+      log.warn('$ tiny-apikey --help')
     }
 
-    return false
+    return process.env.NODE_ENV !== 'testing' ? process.exit(1) : null
   }
-  return apikeys
 }
 
-function write(dbpath, apikeys = []) {
-  fs.outputJsonSync(dbpath, {
+function write(keypath, apikeys = []) {
+  fs.outputJsonSync(keypath, {
     apikeys
   })
 }
@@ -67,9 +64,9 @@ export default {
     }
   },
   get() {
-    return this.apikeys[0]
+    return (this.apikeys && this.apikeys[0]) || null
   },
-  del(key) {
+  delete(key) {
     let apikeys = this.apikeys
     let index = isNaN(key) ? Number(key) : apikeys.indexOf(key)
 

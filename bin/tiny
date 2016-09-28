@@ -8,6 +8,7 @@ program
   .usage('[options] [files]')
   .option('-d, --dest <path>', 'directory path to output images')
   .option('    --detail', 'show more detail')
+  .option('    --lock', 'only use default apikey even though invalid')
   .on('--help', function () {
     console.log(
       [
@@ -25,10 +26,12 @@ program.parse(process.argv)
 
 var pattern = program.args || ['*.png']
 var dest = program.dest
-var detail = program.detail
+var detail = !!program.detail
+var lock = !!program.lock
 
 require('../lib/cmd/tiny').default({
   pattern: pattern,
   dest: dest,
-  detail: detail
+  detail: detail,
+  lock: lock
 })

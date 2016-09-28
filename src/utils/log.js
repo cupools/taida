@@ -12,15 +12,15 @@ log.info = function (msg) {
 }
 
 log.warn = function (msg) {
-  log('  WARN: ' + colors.yellow(msg))
+  log('  warn: ' + colors.yellow(msg))
 }
 
 log.error = function (msg) {
-  log('  ERROR: ' + colors.red(msg))
+  log('  error: ' + colors.red(msg))
 }
 
 log.build = function (path) {
-  log.info('Compress ' + path)
+  log.info('compressed ' + path)
 }
 
 log.statistic = function (msg) {

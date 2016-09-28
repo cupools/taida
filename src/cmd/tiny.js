@@ -20,7 +20,7 @@ export default function (options) {
     log.statistic(`From ${fix(originTotal)}kb to ${fix(total)}kb, saving __${fix(1e5 - total / originTotal * 1e5)}%__.`)
 
     if (options.detail) {
-      log('Results: ')
+      log('  Results: ')
       success.forEach(img => log.info([img.path, `${fix(img.origin.size)}kb -> ${fix(img.size)}kb`].join(': ')))
     }
 

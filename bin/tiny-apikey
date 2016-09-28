@@ -12,14 +12,21 @@ program
   .command('add <keys...>')
   .description('add apikeys for usage')
   .action(function (keys) {
-    console.log(keys)
+    apikey.add(keys)
   })
 
 program
-  .command('delete <keys...>')
-  .description('remove apikeys')
+  .command('delete <keys>')
+  .description('remove apikeys by')
   .action(function (keys) {
-    console.log(keys)
+    apikey.delete(keys)
+  })
+
+program
+  .command('use <key>')
+  .description('remove apikeys')
+  .action(function (key) {
+    console.log(key)
   })
 
 program

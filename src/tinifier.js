@@ -1,6 +1,6 @@
 import tinify from 'tinify'
 
-import apikey from './extend/apikey'
+import apikey from './apikey'
 import log from './utils/log'
 
 const tinifier = function (buffer) {
@@ -23,6 +23,7 @@ const tinifier = function (buffer) {
   )
 }
 
+tinifier.tinify = tinify
 tinifier.apikey = apikey
 tinifier.logger = log
 
