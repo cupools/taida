@@ -1,14 +1,46 @@
 #!/usr/bin/env node
 
 var program = require('commander')
+var PKG = require('../package.json')
+var apikey = require('../lib/cmd/apikey')
 
 program
-  .usage('[options]')
-  .option('-a, --add <apikeys...>', 'add apikeys for usage')
-  .option('-d, --del <apikeys...>', 'remove apikeys')
-  .option('   --list', 'show apikeys list')
-  .option('   --edit', 'edit apikeys in editor')
-  .option('   --clear', 'remove all apikeys')
-  .parse(process.argv)
+  .version(PKG.version)
+  .usage('<cmd> [keys]')
 
-require('../lib/cmd/apikey').default()
+program
+  .command('add <keys...>')
+  .description('add apikeys for usage')
+  .action(function (keys) {
+    console.log(keys)
+  })
+
+program
+  .command('delete <keys...>')
+  .description('remove apikeys')
+  .action(function (keys) {
+    console.log(keys)
+  })
+
+program
+  .command('list')
+  .description('show apikeys list')
+  .action(function () {
+
+  })
+
+program
+  .command('edit')
+  .description('edit apikeys in editor')
+  .action(function () {
+
+  })
+
+program
+  .command('clear')
+  .description('remove all apikeys')
+  .action(function () {
+
+  })
+
+program.parse(process.argv)

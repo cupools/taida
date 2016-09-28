@@ -4,7 +4,8 @@
   "description": "Compress images by https://tinypng.com",
   "main": "index.js",
   "bin": {
-    "tiny": "bin/tiny"
+    "tiny": "bin/tiny",
+    "tiny-apikey": "bin/tiny-apikey"
   },
   "scripts": {
     "dev": "rm -rf lib && node node_modules/babel-cli/bin/babel src -d lib -D -w",

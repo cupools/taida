@@ -3,30 +3,20 @@
 var program = require('commander')
 var PKG = require('../package.json')
 
-patch(program)
-
 program
   .version(PKG.version)
-  .usage('[cmd] [options]')
-  .allowUnknownOption()
+  .usage('[options] [files]')
+  .option('-d, --dest <path>', 'directory path to save compressed images')
+  .option('    --detail', 'show more detail')
 
-program
-  .command('compress', 'default task', {
-    isDefault: true
-  })
-  .command('apikey', 'manage apikeys of https://tinypng.com')
+program.parse(process.argv)
 
-program
-  .parse(process.argv)
+var pattern = program.args || ['*.png']
+var dest = program.dest
+var detail = program.detail
 
-if (!process.argv.slice(2).length) {
-  program.outputHelp()
-}
-
-function patch(instance) {
-  // patch executeSubCommand for orderly argvs
-  var monkey = instance.executeSubCommand
-  instance.executeSubCommand = function (argv) {
-    return monkey.call(instance, argv, argv.slice(2), [])
-  }
-}
+compress({
+  pattern: pattern,
+  dest: dest,
+  detail: detail
+})
