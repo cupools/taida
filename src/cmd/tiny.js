@@ -5,7 +5,7 @@ import log from '../utils/log'
 import pkg from '../../package.json'
 
 export default function (options) {
-  log(`Tinifier    version: ${pkg.version}`.bold)
+  log(`  Tinifier    version: ${pkg.version}`.bold)
 
   let handleError = R.curry(log.error, R.prop('message'))
 

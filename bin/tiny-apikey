@@ -6,7 +6,7 @@ var apikey = require('../lib/cmd/apikey')
 
 program
   .version(PKG.version)
-  .usage('<cmd> [keys]')
+  .usage('<command> [keys]')
 
 program
   .command('add <keys...>')

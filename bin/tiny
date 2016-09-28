@@ -6,8 +6,20 @@ var PKG = require('../package.json')
 program
   .version(PKG.version)
   .usage('[options] [files]')
-  .option('-d, --dest <path>', 'directory path to save compressed images')
+  .option('-d, --dest <path>', 'directory path to output images')
   .option('    --detail', 'show more detail')
+  .on('--help', function () {
+    console.log(
+      [
+        '  Examples:',
+        '',
+        '    $ tiny images/banner.png',
+        '    $ tiny **/*.{png,jpg} --dest ./compress',
+        ''
+      ]
+      .join('\n')
+    )
+  })
 
 program.parse(process.argv)
 
@@ -15,7 +27,7 @@ var pattern = program.args || ['*.png']
 var dest = program.dest
 var detail = program.detail
 
-compress({
+require('../lib/cmd/tiny').default({
   pattern: pattern,
   dest: dest,
   detail: detail
