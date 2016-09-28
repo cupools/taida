@@ -23,10 +23,10 @@ if (!process.argv.slice(2).length) {
   program.outputHelp()
 }
 
-
 function patch(instance) {
+  // patch executeSubCommand for orderly argvs
   var monkey = instance.executeSubCommand
   instance.executeSubCommand = function (argv) {
-    return monkey(argv, argv.slice(2), [])
+    return monkey.call(instance, argv, argv.slice(2), [])
   }
 }
