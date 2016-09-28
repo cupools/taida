@@ -3,9 +3,11 @@
 var program = require('commander')
 var PKG = require('../package.json')
 
+patch(program)
+
 program
   .version(PKG.version)
-  .usage('[command] [options]')
+  .usage('[cmd] [options]')
   .allowUnknownOption()
 
 program
@@ -19,4 +21,12 @@ program
 
 if (!process.argv.slice(2).length) {
   program.outputHelp()
+}
+
+
+function patch(instance) {
+  var monkey = instance.executeSubCommand
+  instance.executeSubCommand = function (argv) {
+    return monkey(argv, argv.slice(2), [])
+  }
 }

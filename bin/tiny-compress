@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 
 var program = require('commander')
-var compress = require('../lib/cmd/compress').default
 
 program
   .usage('[option]')
-  .option('-p, --pattern <globs...>', 'glob pattern for images filepath to compress')
+  // .option('-p, --pattern <globs...>', 'glob pattern for images filepath to compress')
   .option('-d, --dest <path>', 'directory path to save compressed images')
   .option('    --detail', 'show more detail')
   .parse(process.argv)
