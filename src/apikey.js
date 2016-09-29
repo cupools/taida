@@ -17,7 +17,7 @@ export default {
     }
 
     // return empty array for unexpected .apikey
-    let json = read(this.__path)
+    let json = this.__read()
     if (!json) {
       return []
     }
@@ -38,7 +38,7 @@ export default {
 
     // update .apikey
     if (needsUpdate) {
-      write(this.__path, revise)
+      this.__write(revise)
     }
 
     // save keys to instance, no matter empty array or not
@@ -51,58 +51,59 @@ export default {
   },
 
   get() {
-    let {apikeys} = this
-    let alternate = apikeys ? apikeys.filter(item => item.valid) : []
+    let alternate = this.apikeys.filter(item => item.valid)
     return alternate.length ? alternate[0].key : null
   },
 
-  depress() {
-    let target = this.get()
+  depress(key) {
+    let index = this.__apikeys.map(item => item.key).indexOf(key)
 
-    if (target) {
-      let index = this.__apikeys.map(item => item.key).indexOf(target)
-
+    if (this.__apikeys[index].valid) {
       this.__apikeys[index].valid = false
       this.__apikeys[index].date = Date.now()
 
-      write(this.__path, this.__apikeys)
-    } else {
-      log.warn('no valid apikey currently')
+      this.__write(this.__apikeys)
     }
   },
 
-  add(...keys) {
+  add(args) {
     let {apikeys} = this
+    let keys = [].concat(args)
 
-    // TODO, arguments' validation
-    let args = keys.reduce(
-      (ret, key) => {
-        if (apikeys.includes(key)) {
-          log.error(`the key \`${key.slice(0, 10)}...\` had been added.`)
-          return ret
-        }
-        return [].concat(ret, key)
-      },
-      []
-    )
+    // TODO, api key validation
+    let revise = keys
+      .reduce(
+        (ret, key) => {
+          if (apikeys.filter(item => item.key === key).length) {
+            log.error(`the key \`${key.slice(0, 10)}...\` had been added.`)
+            return ret
+          }
+          return [].concat(ret, key)
+        },
+        []
+      )
+      .map(key => ({
+        key,
+        date: Date.now(),
+        valid: true
+      }))
 
-    if (args.length) {
-      log.info(`${args.length} apikeys has been added successful and ${keys.length - args.length} failed.`)
-    }
+    this.__write([].concat(apikeys, revise))
+    log.info(`${revise.length} apikeys has been added successful and ${keys.length - revise.length} fails`)
 
     return this
   },
 
   delete(key) {
-    let apikeys = this.__apikeys
+    let {apikeys} = this
     let index = isNaN(key) ? Number(key) : apikeys.indexOf(key)
 
-    if (index != null) {
-      apikeys.splice(index, 1)
-      log.info('the apikey has been deleted.')
-    } else {
+    if (index == null) {
       log.warn(`the key \`${key}\` hasn't been added before.`)
     }
+
+    this.__write(apikeys.slice(0, index).concat(apikeys.slice(index + 1)))
+    log.info('the apikey has been deleted.')
 
     return this
   },
@@ -121,6 +122,14 @@ export default {
 
   supply() {
     child.exec('open https://tinypng.com/developers')
+  },
+
+  __read() {
+    return read(this.__path)
+  },
+
+  __write(apikeys) {
+    return write(this.__path, apikeys)
   }
 }
 
