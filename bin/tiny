@@ -8,7 +8,7 @@ program
   .usage('[options] [files]')
   .option('-d, --dest <path>', 'directory path to output images')
   .option('    --detail', 'show more detail')
-  .option('    --lock', 'only use default apikey even though invalid')
+  .option('    --no-alternate', 'only use default apikey even though invalid')
   .on('--help', function () {
     console.log(
       [

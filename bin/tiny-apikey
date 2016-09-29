@@ -31,7 +31,7 @@ program
 
 program
   .command('list')
-  .description('show apikeys list')
+  .description('show apikeys list and compress count')
   .action(function () {
 
   })
