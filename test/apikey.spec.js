@@ -18,6 +18,7 @@ describe('apikey', function () {
   })
 
   beforeEach(function () {
+    console.log(123)
     fs.emptyDirSync('test/tmp')
     apikey.__apikeys = null
   })
@@ -116,10 +117,30 @@ describe('apikey', function () {
       apikey.add('xxx')
       expect(readKeys()).to.have.property('apikeys')
         .that.to.be.lengthOf(1)
+      apikey.add('yyy')
+      expect(readKeys()).to.have.property('apikeys')
+        .that.to.be.lengthOf(2)
     })
   })
 
-  describe('delete', function () {})
+  describe('delete', function () {
+    it('should work', function () {
+      writeKeys([{
+        key: 'xxx'
+      }, {
+        key: 'yyy'
+      }, {
+        key: 'zzz'
+      }])
+
+      apikey.delete('xxx')
+      expect(readKeys()).to.have.deep.property('apikeys[0].key', 'yyy')
+      apikey.delete('xxx')
+      apikey.delete(1)
+      expect(readKeys()).to.have.deep.property('apikeys[0].key', 'yyy')
+        .and.not.have.deep.property('apikeys[1]')
+    })
+  })
 
   function writeKeys(keys) {
     if (keys.split) {

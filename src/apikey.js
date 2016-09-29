@@ -96,14 +96,18 @@ export default {
 
   delete(key) {
     let {apikeys} = this
-    let index = isNaN(key) ? Number(key) : apikeys.indexOf(key)
+    let index = apikeys.reduce((ret, item, idx) => (item.key === key ? idx : ret), null)
+
+    console.log(apikeys, index)
 
     if (index == null) {
       log.warn(`the key \`${key}\` hasn't been added before.`)
+    } else {
+      this.__write(apikeys.slice(0, index).concat(apikeys.slice(index + 1)))
+      log.info('the apikey has been deleted.')
     }
 
-    this.__write(apikeys.slice(0, index).concat(apikeys.slice(index + 1)))
-    log.info('the apikey has been deleted.')
+    console.log(apikeys.slice(0, index).concat(apikeys.slice(index + 1)))
 
     return this
   },
