@@ -18,6 +18,10 @@ describe('apikey', function () {
     apikey.__path = pathProd
   })
 
+  beforeEach(function () {
+    apikey.__apikeys = null
+  })
+
   describe('get', function () {
     it('should init .apikey when file not found', function () {
       expect(apikey.get()).to.be.null
@@ -26,21 +30,78 @@ describe('apikey', function () {
     })
 
     it('should abort when .apikey has error', function () {
-      fs.writeFileSync(pathTest, 'error')
+      fs.outputFileSync(pathTest, 'error')
       expect(apikey.get()).to.be.null
     })
 
     it('should work', function () {
-      fs.outputJsonSync(pathTest, {
-        apikeys: ['ok']
-      })
-      apikey.__apikeys = null
-
-      expect(apikey.get()).to.be.equal('ok')
+      writeKeys()
+      expect(apikey.get()).to.be.equal('xxx')
+      expect(apikey.get()).to.be.equal('xxx')
     })
+
+    it('should get valid key', function () {
+      writeKeys([{
+        key: 'xxx',
+        valid: false
+      }, {
+        key: 'yyy',
+        valid: true
+      }])
+      expect(apikey.get()).to.be.equal('yyy')
+    })
+
+    it('should revise invalid apikey created long ago', function () {
+      writeKeys([{
+        key: 'xxx',
+        date: Date.now() - 2 * 24 * 3600 * 1e3,
+        valid: false
+      }, {
+        key: 'yyy',
+        valid: true
+      }])
+      expect(apikey.get()).to.be.equal('xxx')
+
+      let json = readKeys()
+
+      expect(json).to.have.deep.property('apikeys[0].valid', true)
+      expect(json).to.have.property('apikeys')
+        .that.to.be.lengthOf(2)
+    })
+  })
+
+  describe('set', function () {
+    it('should not have change', function () {
+      writeKeys()
+      apikey.apikeys = 'abc'
+      expect(apikey.apikeys).to.have.deep.property('[0].key')
+    })
+  })
+
+  describe('depress', function () {
   })
 
   describe('add', function () {})
 
   describe('delete', function () {})
+
+  function writeKeys(keys = {}) {
+    fs.outputJsonSync(pathTest, {
+      apikeys: []
+        .concat(keys)
+        .map(
+          item => (
+            Object.assign({
+              valid: true,
+              date: Date.now(),
+              key: 'xxx'
+            }, item)
+          )
+        )
+    })
+  }
+
+  function readKeys() {
+    return fs.readJsonSync(pathTest)
+  }
 })

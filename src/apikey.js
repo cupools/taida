@@ -4,54 +4,30 @@ import child from 'child_process'
 
 import log from './utils/log'
 
-function read(keypath) {
-  try {
-    let json = fs.readJsonSync(keypath)
-    let {apikeys} = json
-
-    if (!apikeys.length) {
-      log.warn('No apikeys found.')
-      log.warn('$ tiny-apikey --add [key]')
-    }
-
-    return apikeys
-  } catch (e) {
-    if (e.errno === -2) {
-      // file not exist
-      write(keypath)
-      log.warn(keypath + ' has built.')
-      log.warn('$ tiny-apikey --add [key]')
-    } else {
-      log.error(e.message)
-      log.warn('$ tiny-apikey --help')
-    }
-
-    return process.env.NODE_ENV !== 'testing' ? process.exit(1) : null
-  }
-}
-
-function write(keypath, apikeys = []) {
-  fs.outputJsonSync(keypath, {
-    apikeys
-  })
-}
-
+/**
+ * API to control apikey
+ */
 export default {
   __path: path.resolve('.apikey'),
   __apikeys: null,
 
   get apikeys() {
     if (this.__apikeys) {
-      return this.apikeys
+      return this.__apikeys
     }
 
-    // get apikeys and revise invalid keys
-    let now = Date.now()
+    // return empty array for unexpected .apikey
     let json = read(this.__path)
-    let needUpdate = false
+    if (!json) {
+      return []
+    }
+
+    // revise invalid keys
+    let now = Date.now()
+    let needsUpdate = false
     let revise = json.map(item => {
       if (!item.valid && now - item.date > 1 * 24 * 3600 * 1e3) {
-        needUpdate = true
+        needsUpdate = true
         return Object.assign({}, item, {
           valid: true,
           date: now
@@ -61,15 +37,12 @@ export default {
     })
 
     // update .apikey
-    if (needUpdate) {
+    if (needsUpdate) {
       write(this.__path, revise)
     }
 
-    // save keys to instance
-    if (revise) {
-      this.__apikeys = revise
-    }
-
+    // save keys to instance, no matter empty array or not
+    this.__apikeys = revise
     return this.__apikeys
   },
 
@@ -78,7 +51,8 @@ export default {
   },
 
   get() {
-    let alternate = this.apikeys ? this.apikeys.filter(item => item.valid) : []
+    let {apikeys} = this
+    let alternate = apikeys ? apikeys.filter(item => item.valid) : []
     return alternate.length ? alternate[0].key : null
   },
 
@@ -93,7 +67,7 @@ export default {
 
       write(this.__path, this.__apikeys)
     } else {
-      log.warn('No valid apikey currently')
+      log.warn('no valid apikey currently')
     }
   },
 
@@ -104,7 +78,7 @@ export default {
     let args = keys.reduce(
       (ret, key) => {
         if (apikeys.includes(key)) {
-          log.error(`The key \`${key.slice(0, 10)}...\` had been added.`)
+          log.error(`the key \`${key.slice(0, 10)}...\` had been added.`)
           return ret
         }
         return [].concat(ret, key)
@@ -120,21 +94,20 @@ export default {
   },
 
   delete(key) {
-    let apikeys = this.apikeys
+    let apikeys = this.__apikeys
     let index = isNaN(key) ? Number(key) : apikeys.indexOf(key)
 
     if (index != null) {
       apikeys.splice(index, 1)
-      log.info('The apikey has been deleted.')
+      log.info('the apikey has been deleted.')
     } else {
-      log.warn(`The key \`${key}\` hasn't been added before.`)
+      log.warn(`the key \`${key}\` hasn't been added before.`)
     }
 
     return this
   },
 
   clear() {
-    this.apikeys.length = 0
     return this
   },
 
@@ -149,4 +122,35 @@ export default {
   supply() {
     child.exec('open https://tinypng.com/developers')
   }
+}
+
+function read(keypath) {
+  try {
+    let json = fs.readJsonSync(keypath)
+    let {apikeys} = json
+
+    if (!apikeys.length) {
+      log.warn('no apikeys found.')
+      log.warn('$ tiny-apikey --add [key]')
+    }
+
+    return apikeys
+  } catch (e) {
+    if (e.errno === -2) {
+      // file not exist
+      write(keypath)
+      log.warn(keypath + ' has built.')
+      log.warn('$ tiny-apikey --add [key]')
+    } else {
+      log.error(e.message)
+      log.warn('$ tiny-apikey --help')
+    }
+    return null
+  }
+}
+
+function write(keypath, apikeys = []) {
+  fs.outputJsonSync(keypath, {
+    apikeys
+  })
 }
