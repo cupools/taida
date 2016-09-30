@@ -98,8 +98,6 @@ export default {
     let {apikeys} = this
     let index = apikeys.reduce((ret, item, idx) => (item.key === key ? idx : ret), null)
 
-    console.log(apikeys, index)
-
     if (index == null) {
       log.warn(`the key \`${key}\` hasn't been added before.`)
     } else {
@@ -107,25 +105,34 @@ export default {
       log.info('the apikey has been deleted.')
     }
 
-    console.log(apikeys.slice(0, index).concat(apikeys.slice(index + 1)))
-
     return this
   },
 
   clear() {
+    this.__apikeys = []
+    this.__write([])
     return this
   },
 
   list() {
+    let stdout = this.apikeys
+    .reduce(
+      (ret, obj, index) => [].concat(ret, `${index}. ${obj.key}`),
+      []
+    )
+    .map(str => '\n  ' + str)
+    log.info(stdout.join(''))
+
     return this
   },
 
   edit() {
-    child.exec(`open ${this.__path}`)
+    this.__write([])
+    open(this.__path)
   },
 
   supply() {
-    child.exec('open https://tinypng.com/developers')
+    open('https://tinypng.com/developers')
   },
 
   __read() {
@@ -151,7 +158,7 @@ function read(keypath) {
   } catch (e) {
     if (e.errno === -2) {
       // file not exist
-      write(keypath)
+      write(keypath, [])
       log.warn(keypath + ' has built.')
       log.warn('$ tiny-apikey --add [key]')
     } else {
@@ -162,8 +169,26 @@ function read(keypath) {
   }
 }
 
-function write(keypath, apikeys = []) {
+function write(keypath, apikeys) {
   fs.outputJsonSync(keypath, {
     apikeys
   })
+}
+
+/* istanbul ignore next */
+function open(p) {
+  let cmd = 'open'
+  switch (process.platform) {
+    case 'wind32':
+      cmd = 'start'
+      break
+    case 'linux':
+      cmd = 'xdg-open'
+      break
+    default:
+      cmd = 'open'
+      break
+  }
+
+  child.exec(cmd + ' ' + p)
 }

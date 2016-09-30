@@ -18,13 +18,13 @@ describe('apikey', function () {
   })
 
   beforeEach(function () {
-    console.log(123)
     fs.emptyDirSync('test/tmp')
     apikey.__apikeys = null
   })
 
-  describe('get', function () {
+  describe('.get', function () {
     it('should init .apikey when file not found', function () {
+      expect(apikey.get()).to.be.null
       expect(apikey.get()).to.be.null
       expect(readKeys()).to.have.property('apikeys')
         .that.to.be.empty
@@ -73,7 +73,7 @@ describe('apikey', function () {
     })
   })
 
-  describe('set', function () {
+  describe('.set', function () {
     it('should not have change', function () {
       writeKeys({
         key: 'xxx'
@@ -83,7 +83,7 @@ describe('apikey', function () {
     })
   })
 
-  describe('depress', function () {
+  describe('.depress', function () {
     it('should work', function () {
       writeKeys([{
         key: 'xxx',
@@ -110,7 +110,7 @@ describe('apikey', function () {
     })
   })
 
-  describe('add', function () {
+  describe('.add', function () {
     it('should work', function () {
       apikey.add('xxx')
       expect(readKeys()).to.have.deep.property('apikeys[0].key', 'xxx')
@@ -123,7 +123,7 @@ describe('apikey', function () {
     })
   })
 
-  describe('delete', function () {
+  describe('.delete', function () {
     it('should work', function () {
       writeKeys([{
         key: 'xxx'
@@ -139,6 +139,45 @@ describe('apikey', function () {
       apikey.delete(1)
       expect(readKeys()).to.have.deep.property('apikeys[0].key', 'yyy')
         .and.not.have.deep.property('apikeys[1]')
+    })
+  })
+
+  describe('.list', function () {
+    it('should work', function () {
+      writeKeys([{
+        key: 'xxx'
+      }, {
+        key: 'yyy'
+      }, {
+        key: 'zzz'
+      }])
+      apikey.list()
+    })
+  })
+
+  describe('.clear', function () {
+    it('should work', function () {
+      writeKeys([{
+        key: 'xxx'
+      }, {
+        key: 'yyy'
+      }, {
+        key: 'zzz'
+      }])
+      apikey.clear()
+      expect(apikey.get()).to.be.null
+    })
+  })
+
+  describe('.supply', function () {
+    it('should work', function () {
+      apikey.supply()
+    })
+  })
+
+  describe('.edit', function () {
+    it('should work', function () {
+      apikey.edit()
     })
   })
 
