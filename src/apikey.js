@@ -126,12 +126,12 @@ export default {
     return this
   },
 
-  edit() {
+  edit /* istanbul ignore next */ () {
     this.__write([])
     open(this.__path)
   },
 
-  supply() {
+  supply /* istanbul ignore next */ () {
     open('https://tinypng.com/developers')
   },
 

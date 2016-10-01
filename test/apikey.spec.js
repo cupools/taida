@@ -169,18 +169,6 @@ describe('apikey', function () {
     })
   })
 
-  describe('.supply', function () {
-    it('should work', function () {
-      apikey.supply()
-    })
-  })
-
-  describe('.edit', function () {
-    it('should work', function () {
-      apikey.edit()
-    })
-  })
-
   function writeKeys(keys) {
     if (keys.split) {
       fs.outputFileSync(pathTest, keys)
