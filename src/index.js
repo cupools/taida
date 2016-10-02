@@ -4,11 +4,15 @@ import glob from 'glob'
 import R from 'ramda'
 
 import tinifier from './tinifier'
+import lint from './lint'
 import log from './utils/log'
 import progress from './utils/progress'
 
 export default function (options) {
-  // TODO, argument validation
+  if (!lint(options)) {
+    return Promise.reject('stop process for unexpect options')
+  }
+
   let {pattern} = options
   let resources = []
     .concat(pattern)
@@ -16,7 +20,6 @@ export default function (options) {
     .reduce((ret, arr) => ret.concat(arr), [])
 
   let bar = progress(resources.length)
-
   let handleError = R.curry(log.error, R.prop('message'))
 
   let readFile = function (path) {
@@ -69,8 +72,10 @@ export default function (options) {
   let resourcesP = resources
     .map(wrapImg)
     .map(compressP)
-    .map(p => p.then(outputP(options.dest)))
-    .map(p => p.catch(handleError))
+    .map(p => p
+      .then(outputP(options.dest))
+      .catch(handleError)
+    )
 
   return Promise
     .all(resourcesP)

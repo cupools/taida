@@ -18,29 +18,29 @@ function compress(buffer) {
     (resolve, reject) => (
       tinify
         .fromBuffer(buffer)
-        .toBuffer(
-          (error, data) => {
-            if (error) {
-              reject({
-                error,
-                buffer,
-                _key
-              })
-            } else {
-              resolve({
-                buffer: data,
-                size: data.length,
-                origin: {
-                  buffer,
-                  size: buffer.length
-                },
-                level: Number((data.length / buffer.length).toFixed(4))
-              })
-            }
-          }
-        )
+        .toBuffer(R.curry(handleResult)(resolve, reject, buffer, _key))
     )
   )
+}
+
+function handleResult(resolve, reject, buffer, _key, error, data) {
+  if (error) {
+    reject({
+      error,
+      buffer,
+      _key
+    })
+  } else {
+    resolve({
+      buffer: data,
+      size: data.length,
+      origin: {
+        buffer,
+        size: buffer.length
+      },
+      level: Number((data.length / buffer.length).toFixed(4))
+    })
+  }
 }
 
 function handleError(fallback, ret) {

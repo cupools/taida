@@ -5,7 +5,7 @@ var PKG = require('../package.json')
 
 program
   .version(PKG.version)
-  .usage('[options] [files]')
+  .usage('[options] [files ...]')
   .option('-d, --dest <path>', 'directory path to output images')
   .option('    --detail', 'show more detail')
   .option('    --no-alternate', 'only use default apikey even though invalid')
@@ -16,6 +16,7 @@ program
         '',
         '    $ tiny images/banner.png',
         '    $ tiny **/*.{png,jpg} --dest ./compress',
+        '    $ tiny-apikey add apikeyfromtinypng',
         ''
       ]
       .join('\n')

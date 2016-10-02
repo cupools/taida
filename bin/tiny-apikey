@@ -9,7 +9,7 @@ program
   .usage('<command> [key]')
 
 program
-  .command('add <keys...>')
+  .command('add <keys ...>')
   .description('add apikeys for usage')
   .action(function (keys) {
     apikey.add(keys)
@@ -38,7 +38,7 @@ program
 
 program
   .command('edit')
-  .description('edit apikeys in editor')
+  .description('open .apikeys in editor')
   .action(function () {
     apikey.edit()
   })
