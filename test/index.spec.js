@@ -1,12 +1,13 @@
 /* eslint-env mocha */
 
-import {expect} from 'chai'
+import { expect } from 'chai'
 import fs from 'fs-extra'
+import nock from 'nock'
 
 import tinifier from '../src/index'
 
 describe('index', function () {
-  this.timeout(10e4)
+  this.timeout(1e4)
   this.beforeEach(function () {
     fs.copySync('test/fixtures', 'test/tmp')
   })

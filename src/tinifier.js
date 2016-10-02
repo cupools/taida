@@ -1,21 +1,19 @@
 import tinify from 'tinify'
+import R from 'ramda'
 
 import apikey from './apikey'
 
-const tinifier = function () {
-  setKey()
-
-  return function (buffer) {
-    return compress(buffer).catch(ret => handleError(compress, ret))
-  }
-}
-
-function setKey() {
-  tinify.key = apikey.get()
+const tinifier = function (buffer) {
+  return compress(buffer).catch(R.curry(handleError)(compress))
 }
 
 function compress(buffer) {
-  let _key = tinify._key
+  let _key = tinify.key = apikey.get()
+
+  if (!_key) {
+    return Promise.reject(new Error('failed for no usable apikey'))
+  }
+
   return new Promise(
     (resolve, reject) => (
       tinify
@@ -45,22 +43,20 @@ function compress(buffer) {
   )
 }
 
-function handleError(task, ret) {
-  let {_key, ...payload} = ret
-
-  // error is not for apikey validation
-  if (!_key) {
-    return Promise.reject(error)
+function handleError(fallback, ret) {
+  // unexpect error
+  if (ret instanceof Error) {
+    return Promise.reject(ret)
   }
 
-  let {error, buffer} = payload
+  let {_key, error, buffer} = ret
   let {message} = error
 
   if (message.includes(401)) {
     // Credentials are invalid (HTTP 401/Unauthorized)
     // should change another apikey and fallback to compress
     apikey.depress(_key)
-    return task(buffer)
+    return fallback(buffer)
   }
 
   return Promise.reject(error)
@@ -69,4 +65,4 @@ function handleError(task, ret) {
 tinifier.tinify = tinify
 tinifier.apikey = apikey
 
-export default tinifier()
+export default tinifier

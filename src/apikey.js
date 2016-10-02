@@ -71,27 +71,32 @@ export default {
     let keys = [].concat(args)
 
     // TODO, api key validation
-    let revise = keys
+    let [fails, success] = keys
       .reduce(
         (ret, key) => {
+          let [left, right] = ret
           if (apikeys.filter(item => item.key === key).length) {
-            log.error(`the key \`${key.slice(0, 10)}...\` had been added.`)
-            return ret
+            return [left.concat(key), right]
           }
-          return [].concat(ret, key)
+          return [left, right.concat(key)]
         },
-        []
+        [[], []]
       )
+
+    let revise = success
       .map(key => ({
         key,
         date: Date.now(),
         valid: true
       }))
 
+    this.__apikeys = null
     this.__write([].concat(apikeys, revise))
-    log.info(`${revise.length} apikeys has been added successful and ${keys.length - revise.length} fails`)
 
-    return this
+    return Promise.resolve({
+      fails,
+      success
+    })
   },
 
   delete(key) {
@@ -99,39 +104,30 @@ export default {
     let index = apikeys.reduce((ret, item, idx) => (item.key === key ? idx : ret), null)
 
     if (index == null) {
-      log.warn(`the key \`${key}\` hasn't been added before.`)
-    } else {
-      this.__write(apikeys.slice(0, index).concat(apikeys.slice(index + 1)))
-      log.info('the apikey has been deleted.')
+      return Promise.reject(key)
     }
 
-    return this
+    this.__apikeys = null
+    this.__write(apikeys.slice(0, index).concat(apikeys.slice(index + 1)))
+    return Promise.resolve(key)
   },
 
   clear() {
     this.__apikeys = []
     this.__write([])
-    return this
+    return Promise.resolve()
   },
 
   list() {
-    let stdout = this.apikeys
-    .reduce(
-      (ret, obj, index) => [].concat(ret, `${index}. ${obj.key}`),
-      []
-    )
-    .map(str => '\n  ' + str)
-    log.info(stdout.join(''))
-
-    return this
+    return Promise.resolve(this.apikeys)
   },
 
-  edit /* istanbul ignore next */ () {
+  edit() {
     this.__write([])
     open(this.__path)
   },
 
-  supply /* istanbul ignore next */ () {
+  supply() {
     open('https://tinypng.com/developers')
   },
 
@@ -175,7 +171,6 @@ function write(keypath, apikeys) {
   })
 }
 
-/* istanbul ignore next */
 function open(p) {
   let cmd = 'open'
   switch (process.platform) {

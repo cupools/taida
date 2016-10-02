@@ -15,8 +15,6 @@ export default function (options) {
     .map(f => glob.sync(f))
     .reduce((ret, arr) => ret.concat(arr), [])
 
-  log.info(`Found ${resources.length} bitmaps and starting...`)
-
   let bar = progress(resources.length)
 
   // handleError :: String -> ()

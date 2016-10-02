@@ -1,4 +1,5 @@
 import R from 'ramda'
+import glob from 'glob'
 
 import main from '../index'
 import log from '../utils/log'
@@ -31,6 +32,15 @@ export default function (options) {
 
     return Promise.resolve(imgs)
   })
+
+  let resources = []
+    .concat(options.pattern)
+    .map(f => glob.sync(f))
+    .reduce((ret, arr) => ret.concat(arr), [])
+
+  if (resources.length) {
+    log.info(`Found ${resources.length} bitmaps and starting...`)
+  }
 
   return main(options)
     .then(statistics)
