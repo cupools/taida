@@ -71,7 +71,7 @@ export default {
     let keys = [].concat(args)
 
     // TODO, api key validation
-    let [fails, success] = keys
+    let [fail, success] = keys
       .reduce(
         (ret, key) => {
           let [left, right] = ret
@@ -91,12 +91,25 @@ export default {
       }))
 
     this.__apikeys = null
-    this.__write([].concat(apikeys, revise))
+    this.__write(apikeys.concat(revise))
 
     return Promise.resolve({
-      fails,
+      fail,
       success
     })
+  },
+
+  use(key) {
+    let {apikeys} = this
+    let index = apikeys.reduce((ret, item, idx) => (item.key === key ? idx : ret), null)
+
+    if (index == null) {
+      return Promise.reject(key)
+    }
+
+    this.__apikeys = null
+    this.__write([apikeys[index], ...apikeys.slice(0, index), ...apikeys.slice(index + 1)])
+    return Promise.resolve(key)
   },
 
   delete(key) {
@@ -123,7 +136,6 @@ export default {
   },
 
   edit() {
-    this.__write([])
     open(this.__path)
   },
 
@@ -145,18 +157,13 @@ function read(keypath) {
     let json = fs.readJsonSync(keypath)
     let {apikeys} = json
 
-    if (!apikeys.length) {
-      log.warn('no apikeys found.')
-      log.warn('$ tiny-apikey --add [key]')
-    }
-
     return apikeys
   } catch (e) {
     if (e.errno === -2) {
       // file not exist
       write(keypath, [])
       log.warn(keypath + ' has built.')
-      log.warn('$ tiny-apikey --add [key]')
+      log.warn('$ tiny-apikey add <keys>')
     } else {
       log.error(e.message)
       log.warn('$ tiny-apikey --help')

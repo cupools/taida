@@ -2,9 +2,9 @@ import colors from 'colors'
 
 let state = true
 
-const log = function (msg) {
+const log = function (...args) {
   /* istanbul ignore next */
-  process.env.NODE_ENV !== 'test' && state && console.log(msg)
+  process.env.NODE_ENV !== 'test' && state && console.log(...args)
 }
 
 log.info = function (msg) {

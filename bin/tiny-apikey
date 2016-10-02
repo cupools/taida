@@ -2,11 +2,11 @@
 
 var program = require('commander')
 var PKG = require('../package.json')
-var apikey = require('../lib/cmd/apikey')
+var apikey = require('../lib/cmd/apikey').default
 
 program
   .version(PKG.version)
-  .usage('<command> [keys]')
+  .usage('<command> [key]')
 
 program
   .command('add <keys...>')
@@ -16,7 +16,7 @@ program
   })
 
 program
-  .command('delete <keys>')
+  .command('delete <key>')
   .description('remove apikeys by')
   .action(function (keys) {
     apikey.delete(keys)
@@ -24,30 +24,37 @@ program
 
 program
   .command('use <key>')
-  .description('remove apikeys')
+  .description('suggest specified key to be used first')
   .action(function (key) {
-    console.log(key)
+    apikey.use(key)
   })
 
 program
   .command('list')
   .description('show apikeys list and compress count')
   .action(function () {
-    
+    apikey.list()
   })
 
 program
   .command('edit')
   .description('edit apikeys in editor')
   .action(function () {
+    apikey.edit()
+  })
 
+program
+  .command('supply')
+  .description('open http://tinypng.com to supply api key')
+  .action(function () {
+    apikey.supply()
   })
 
 program
   .command('clear')
   .description('remove all apikeys')
   .action(function () {
-
+    apikey.clear()
   })
 
 program.parse(process.argv)

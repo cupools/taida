@@ -17,22 +17,18 @@ export default function (options) {
 
   let bar = progress(resources.length)
 
-  // handleError :: String -> ()
   let handleError = R.curry(log.error, R.prop('message'))
 
-  // readFile :: String -> String
   let readFile = function (path) {
     return fs.readFileSync(path)
   }
 
-  // writeFile :: String -> ()
   let writeFile = function (path, buffer) {
     return fs.outputFileSync(path, buffer, {
       encoding: 'binary'
     })
   }
 
-  // wrapImg :: String -> img
   let wrapImg = function (path) {
     return {
       path,
@@ -40,7 +36,6 @@ export default function (options) {
     }
   }
 
-  // compressP :: img -> Promise img
   let compressP = function (img) {
     return tinifier(img.buffer)
       .then(
@@ -54,7 +49,6 @@ export default function (options) {
       )
   }
 
-  // outputP :: String -> (img -> Promise img)
   let outputP = R.curry(
     (dest, img) => {
       bar.tick()
