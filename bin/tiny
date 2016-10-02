@@ -2,13 +2,15 @@
 
 var program = require('commander')
 var PKG = require('../package.json')
+var tiny = require('../lib/cmd/tiny').default
 
 program
   .version(PKG.version)
   .usage('[options] [files ...]')
   .option('-d, --dest <path>', 'directory path to output images')
   .option('    --detail', 'show more detail')
-  .option('    --no-alternate', 'only use default apikey even though invalid')
+  .option('    --no-alternate', 'only use the first apikey even though invalid')
+  .option('    --no-backup', 'do not backup latest uncompressed bitmaps for restore')
   .on('--help', function () {
     console.log(
       [
@@ -23,16 +25,22 @@ program
     )
   })
 
+program
+  .command('restore')
+  .action(function () {
+    console.log(123)
+  })
+
 program.parse(process.argv)
 
 var pattern = program.args || ['*.png']
 var dest = program.dest
 var detail = !!program.detail
-var lock = !!program.lock
+var alternate = !!program.alternate
 
-require('../lib/cmd/tiny').default({
+tiny.main({
   pattern: pattern,
   dest: dest,
   detail: detail,
-  lock: lock
+  alternate: alternate
 })

@@ -38,7 +38,9 @@ export default {
         if (keys.length) {
           log(
             keys
-              .map((item, index) => `  ${index}: ${item.key} (${item.valid ? 'valid' : 'invalid'})`)
+              .map((item, index) => (
+                `  ${index}. ${item.key} (${item.valid ? 'valid' : 'invalid'}${index === 0 ? ', default' : ''})`
+              ))
               .join('\n')
           )
         } else {
