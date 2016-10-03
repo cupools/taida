@@ -28,7 +28,7 @@ program
 program
   .command('restore')
   .action(function () {
-    console.log('123')
+    tiny.restore()
   })
 
 program.parse(process.argv)
@@ -38,11 +38,13 @@ if (!program.args[0] || program.args[0].constructor !== program.Command) {
   var dest = program.dest
   var detail = !!program.detail
   var alternate = !!program.alternate
+  var backup = !!program.backup
 
   tiny.main({
     pattern: pattern,
     dest: dest,
     detail: detail,
-    alternate: alternate
+    alternate: alternate,
+    backup: backup
   })
 }

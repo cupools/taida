@@ -8,7 +8,7 @@ import log from './utils/log'
  * API to control apikey
  */
 export default {
-  __path: path.resolve('.apikey'),
+  __path: path.join(__dirname, '../', '.apikey'),
   __apikeys: null,
 
   get apikeys() {
