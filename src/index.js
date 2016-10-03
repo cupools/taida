@@ -1,7 +1,6 @@
 import Path from 'path'
 import fs from 'fs-extra'
 import glob from 'glob'
-import R from 'ramda'
 
 import tinifier from './tinifier'
 import lint from './lint'
@@ -10,7 +9,7 @@ import progress from './utils/progress'
 
 export default function (options) {
   if (!lint(options)) {
-    return Promise.reject('stop process for unexpect options')
+    return Promise.reject('exit for unexpect options')
   }
 
   let {pattern} = options
@@ -20,7 +19,7 @@ export default function (options) {
     .reduce((ret, arr) => ret.concat(arr), [])
 
   let bar = progress(resources.length)
-  let handleError = R.curry(log.error, R.prop('message'))
+  let handleError = err => log.error(err.message)
 
   let readFile = function (path) {
     return fs.readFileSync(path)
@@ -52,8 +51,8 @@ export default function (options) {
       )
   }
 
-  let outputP = R.curry(
-    (dest, img) => {
+  let outputP = function (dest) {
+    return img => {
       bar.tick()
 
       if (img.error) {
@@ -67,7 +66,7 @@ export default function (options) {
 
       return Promise.resolve(img)
     }
-  )
+  }
 
   let resourcesP = resources
     .map(wrapImg)

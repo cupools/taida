@@ -28,19 +28,21 @@ program
 program
   .command('restore')
   .action(function () {
-    console.log(123)
+    console.log('123')
   })
 
 program.parse(process.argv)
 
-var pattern = program.args || ['*.png']
-var dest = program.dest
-var detail = !!program.detail
-var alternate = !!program.alternate
+if (!program.args[0] || program.args[0].constructor !== program.Command) {
+  var pattern = program.args.length ? program.args : ['*.png']
+  var dest = program.dest
+  var detail = !!program.detail
+  var alternate = !!program.alternate
 
-tiny.main({
-  pattern: pattern,
-  dest: dest,
-  detail: detail,
-  alternate: alternate
-})
+  tiny.main({
+    pattern: pattern,
+    dest: dest,
+    detail: detail,
+    alternate: alternate
+  })
+}

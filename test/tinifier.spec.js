@@ -15,11 +15,15 @@ describe('tinifier', function () {
 
   before(function () {
     apikey.__path = pathTest
-    writeKeys({})
   })
 
   after(function () {
     apikey.__path = pathProd
+  })
+
+  beforeEach(function () {
+    apikey.__apikeys = null
+    writeKeys({})
   })
 
   describe('should work', function () {

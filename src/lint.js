@@ -15,10 +15,10 @@ export default function (opt) {
     let ret = true
 
     /* istanbul ignore next */
-    if (typeOf) {
+    if (actual !== undefined && typeOf) {
       ret = ret && assert.typeOf(actual, typeOf, `expect \`${param}\` to be ${typeOf.name} but get \`${actual}\``)
     }
-    if (oneOf) {
+    if (actual !== undefined && oneOf) {
       ret = ret && assert.oneOf(actual, oneOf, `expect \`${param}\` to be one of [${oneOf.join(', ')}] but get \`${actual}\``)
     }
     if (necessary) {

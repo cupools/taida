@@ -1,10 +1,9 @@
 import tinify from 'tinify'
-import R from 'ramda'
 
 import apikey from './apikey'
 
 const tinifier = function (buffer) {
-  return compress(buffer).catch(R.curry(handleError)(compress))
+  return compress(buffer).catch(err => handleError(compress, err))
 }
 
 function compress(buffer) {
@@ -18,7 +17,7 @@ function compress(buffer) {
     (resolve, reject) => (
       tinify
         .fromBuffer(buffer)
-        .toBuffer(R.curry(handleResult)(resolve, reject, buffer, _key))
+        .toBuffer((error, data) => handleResult(resolve, reject, buffer, _key, error, data))
     )
   )
 }
@@ -44,7 +43,7 @@ function handleResult(resolve, reject, buffer, _key, error, data) {
 }
 
 function handleError(fallback, ret) {
-  // unexpect error
+  // dealing with unexpect error
   if (ret instanceof Error) {
     return Promise.reject(ret)
   }

@@ -101,9 +101,11 @@ export default {
 
   use(key) {
     let {apikeys} = this
-    let index = apikeys.reduce((ret, item, idx) => (item.key === key ? idx : ret), null)
+    let index = isNaN(key)
+      ? apikeys.reduce((ret, item, idx) => (item.key === key ? idx : ret), null)
+      : Number(key)
 
-    if (index == null) {
+    if (index == null || !apikeys[index]) {
       return Promise.reject(key)
     }
 
@@ -114,9 +116,11 @@ export default {
 
   delete(key) {
     let {apikeys} = this
-    let index = apikeys.reduce((ret, item, idx) => (item.key === key ? idx : ret), null)
+    let index = isNaN(key)
+      ? apikeys.reduce((ret, item, idx) => (item.key === key ? idx : ret), null)
+      : Number(key)
 
-    if (index == null) {
+    if (index == null || !apikeys[index]) {
       return Promise.reject(key)
     }
 
