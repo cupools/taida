@@ -10,7 +10,7 @@ program
   .option('-d, --dest <path>', 'directory path to output images')
   .option('    --detail', 'show more detail')
   .option('    --no-alternate', 'only use the first apikey even though invalid')
-  .option('    --no-backup', 'do not backup latest uncompressed bitmaps for restore')
+  .option('    --no-backup', 'do not backup latest compressed bitmaps for restore')
   .on('--help', function () {
     console.log(
       [
@@ -27,6 +27,7 @@ program
 
 program
   .command('restore')
+  .description('restore the latest compressed bitmaps')
   .action(function () {
     tiny.restore()
   })
