@@ -71,6 +71,24 @@ describe('apikey', function () {
       expect(json).to.have.property('apikeys')
         .that.to.be.lengthOf(2)
     })
+
+    it('should get default key when alternate disabled', function () {
+      writeKeys([{
+        key: 'xxx'
+      }, {
+        key: 'yyy'
+      }])
+
+      apikey.alternate = false
+      expect(apikey.get()).to.be.equal('xxx')
+      apikey.depress('xxx')
+      expect(apikey.get()).to.be.null
+      apikey.alternate = true
+      expect(apikey.get()).to.be.equal('yyy')
+
+      apikey.clear()
+      expect(apikey.get()).to.be.null
+    })
   })
 
   describe('.set', function () {

@@ -26,10 +26,10 @@ describe('tinifier', function () {
     writeKeys({})
   })
 
-  describe('should work', function () {
+  describe('normal', function () {
     let buffer = fs.readFileSync('test/fixtures/0.png')
 
-    it('get correct information', function (done) {
+    it('should get correct information', function (done) {
       nock('https://api.tinify.com')
         .post('/shrink')
         .once()
@@ -61,7 +61,7 @@ describe('tinifier', function () {
     })
   })
 
-  describe('should catch error with unexpected bitmap', function () {
+  describe('unexpected bitmap', function () {
     let buffer = fs.readFileSync('test/fixtures/bad.png')
 
     it('get correct callback', function (done) {

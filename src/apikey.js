@@ -10,6 +10,15 @@ import log from './utils/log'
 export default {
   __path: path.join(__dirname, '../', '.apikey'),
   __apikeys: null,
+  __alternate: true,
+
+  get alternate() {
+    return this.__alternate
+  },
+
+  set alternate(val) {
+    this.__alternate = !!val
+  },
 
   get apikeys() {
     if (this.__apikeys) {
@@ -51,8 +60,13 @@ export default {
   },
 
   get() {
-    let alternate = this.apikeys.filter(item => item.valid)
-    return alternate.length ? alternate[0].key : null
+    let {apikeys} = this
+
+    if (this.alternate) {
+      let valids = apikeys.filter(item => item.valid)
+      return valids.length ? valids[0].key : null
+    }
+    return (apikeys[0] && apikeys[0].valid) ? apikeys[0].key : null
   },
 
   depress(key) {
@@ -166,11 +180,10 @@ function read(keypath) {
     if (e.errno === -2) {
       // file not exist
       write(keypath, [])
-      log.warn(keypath + ' has built.')
-      log.warn('$ tiny-apikey add <keys>')
+      log.warn(keypath + ' has built. Try: $ tiny-apikey add <keys>')
     } else {
       log.error(e.message)
-      log.warn('$ tiny-apikey --help')
+      log.warn('Try: $ tiny-apikey --help')
     }
     return null
   }

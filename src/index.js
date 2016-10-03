@@ -12,7 +12,9 @@ export default function (options) {
     return Promise.reject('exit for unexpect options')
   }
 
-  let {pattern} = options
+  let {pattern, alternate} = options
+  tinifier.apikey.alternate = alternate === undefined || !!alternate
+
   let resources = []
     .concat(pattern)
     .map(f => glob.sync(f))
