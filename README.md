@@ -6,8 +6,8 @@ Compress images by [https://tinypng.com](https://tinypng.com)
 
 - [x] Basic function
 - [x] Basic CLI
-- [ ] Apikeys validation and auto switch within presets
-- [ ] Backup and restore compressed bitmaps
+- [x] Apikeys validation and auto switch within presets
+- [x] Backup and restore compressed bitmaps
 - [ ] Advanced progress bar and reporters
 - [ ] More
 
