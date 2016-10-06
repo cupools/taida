@@ -3,6 +3,7 @@
 import { expect } from 'chai'
 import fs from 'fs-extra'
 
+import {writeKeys, readKeys} from './utils'
 import apikey from '../src/apikey'
 
 describe('apikey', function () {
@@ -10,6 +11,7 @@ describe('apikey', function () {
   const pathTest = 'test/tmp/.apikey'
 
   before(function () {
+    apikey.__apikeys = null
     apikey.__path = pathTest
   })
 
@@ -201,28 +203,4 @@ describe('apikey', function () {
       expect(apikey.get()).to.be.null
     })
   })
-
-  function writeKeys(keys) {
-    if (keys.split) {
-      fs.outputFileSync(pathTest, keys)
-    } else {
-      fs.outputJsonSync(pathTest, {
-        apikeys: []
-          .concat(keys || [])
-          .map(
-            item => (
-              Object.assign({
-                valid: true,
-                date: Date.now(),
-                key: 'xxx'
-              }, item)
-            )
-          )
-      })
-    }
-  }
-
-  function readKeys() {
-    return fs.readJsonSync(pathTest)
-  }
 })
