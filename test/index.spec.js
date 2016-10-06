@@ -50,7 +50,8 @@ describe('index', function () {
       .reply(200, new Buffer(10))
 
     let option = {
-      pattern: 'test/tmp/{1,2,bad}.png'
+      pattern: 'test/tmp/{1,2,bad}.png',
+      alternate: true
     }
 
     tinifier(option)
@@ -62,13 +63,13 @@ describe('index', function () {
       })
   })
 
-  // it('should exit with unexpected option', function (done) {
-  //   tinifier({})
-  //     .then(() => {
-  //       done(new Error('unexpected option'))
-  //     })
-  //     .catch(() => {
-  //       done()
-  //     })
-  // })
+  it('should exit with unexpected option', function (done) {
+    tinifier({})
+      .then(() => {
+        done(new Error('unexpected option'))
+      })
+      .catch(() => {
+        done()
+      })
+  })
 })
