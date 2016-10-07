@@ -1,34 +1,40 @@
 import colors from 'colors'
 
-let state = true
-
 const log = function (...args) {
   /* istanbul ignore next */
-  process.env.NODE_ENV !== 'testing' && state && console.log(...args)
+  if (process.env.NODE_ENV !== 'testing' && log.active) {
+    // eslint-disable-next-line no-console
+    console.log(...args)
+  }
 }
 
-log.info = function (msg) {
-  log('  ' + msg)
+log.active = true
+
+log.info = function (...args) {
+  log('  ' + render(args[0]), ...args.slice(1))
 }
 
-log.warn = function (msg) {
-  log('  warn: ' + colors.yellow(msg))
+log.warn = function (...args) {
+  log.info(
+    colors.yellow('warn: ' + args[0]),
+    ...args.slice(1)
+  )
 }
 
-log.error = function (msg) {
-  log('  error: ' + colors.red(msg))
+log.error = function (...args) {
+  log.info(
+    colors.red('error: ' + args[0]),
+    ...args.slice(1)
+  )
 }
 
-log.build = function (path) {
-  log.info('compressed ' + path)
-}
-
-log.statistic = function (msg) {
-  log.info(msg.replace(/__([^_]+?)__/g, (match, $1) => colors.green($1)))
-}
-
-log.state = function (quiet) {
-  state = !quiet
+function render(str) {
+  return !str.includes('_')
+    ? str
+    : str
+      .replace(/___([\w\W]+?)___/, (_, p1) => p1.green)
+      .replace(/__([\w\W]+?)__/, (_, p1) => p1.bold)
+      .replace(/_([\w\W]+?)_/, (_, p1) => p1.italic)
 }
 
 export default log

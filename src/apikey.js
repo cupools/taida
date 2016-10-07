@@ -25,11 +25,7 @@ export default {
       return this.__apikeys
     }
 
-    // return empty array for unexpected .apikey
     let json = this.__read()
-    if (!json) {
-      return []
-    }
 
     // revise invalid keys
     let now = Date.now()
@@ -145,7 +141,7 @@ export default {
   },
 
   clear() {
-    this.__apikeys = []
+    this.__apikeys = null
     this.__write([])
     return Promise.resolve()
   },
@@ -163,7 +159,7 @@ export default {
   },
 
   __read() {
-    return read(this.__path)
+    return read(this.__path) || []
   },
 
   __write(apikeys) {
@@ -181,10 +177,9 @@ function read(keypath) {
     if (e.errno === -2) {
       // file not exist
       write(keypath, [])
-      log.warn(keypath + ' has built. Try: $ tiny-apikey add <keys>')
+      log.warn(keypath + ' has built, exec: _$ tiny-apikey add <keys>_')
     } else {
       log.error(e.message)
-      log.warn('Try: $ tiny-apikey --help')
     }
     return null
   }

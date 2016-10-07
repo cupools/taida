@@ -15,15 +15,15 @@ export default {
       .map(f => glob.sync(f))
       .reduce((ret, arr) => ret.concat(arr), [])
 
-    log(`  Tinifier    version: ${pkg.version}`.bold)
+    log.info(`\n  __Tinifier    version: ${pkg.version}__\n`)
 
     if (resources.length) {
       log.info(`Found ${resources.length} bitmaps and starting...`)
     }
 
     return main(options)
-      .then(imgs => statistics(imgs, options.detail))
       .then(imgs => backup(imgs, options.backup))
+      .then(imgs => statistics(imgs, options.detail))
       .catch(handleError)
   },
   restore() {
@@ -35,10 +35,10 @@ export default {
       items.forEach(path => {
         let realpath = Path.join(BACKUP_PATH, path)
         fs.copySync(realpath, path)
-        log('  %s has been restore', path)
+        log.info('%s has been restore', path)
       })
     } else {
-      log('  No usable backup now')
+      log.info('No usable backup now')
     }
   }
 }
@@ -50,17 +50,18 @@ function statistics(imgs, detail) {
   let originTotal = success.reduce((ret, img) => ret + img.origin.size, 0)
   let fix = num => (num / 1000).toFixed(2)
 
-  log.statistic(`Compress __${success.length} bitmaps__ successful and ${fails.length} fails.`)
+  log.info(`Compress ___${success.length} bitmaps___ successful and ${fails.length} fails.`)
 
   if (success.length) {
-    log.statistic(`From ${fix(originTotal)}kb to ${fix(total)}kb, saving __${fix(1e5 - total / originTotal * 1e5)}%__.`)
-  }
-  if (detail) {
-    log('  Results: ')
-    success.forEach(img => log.info([img.path, `${fix(img.origin.size)}kb -> ${fix(img.size)}kb`].join(': ')))
+    log.info(`From ${fix(originTotal)}kb to ${fix(total)}kb, saving ___${fix(1e5 - total / originTotal * 1e5)}%___.`)
   }
 
-  fails.forEach(img => log.error([img.path, img.error.message].join(': ')))
+  if (detail) {
+    log.info('Results: ')
+    success.forEach(img => log.info('___√___ %s %skb -> %skb', img.path, fix(img.origin.size), fix(img.size)))
+  }
+
+  fails.forEach(img => log.error('× %s %s', img.path, img.error.message))
 
   return Promise.resolve(imgs)
 }
@@ -81,7 +82,7 @@ function backup(imgs, isBackup) {
       })
     })
 
-    log('  Backup %s bitmaps successful and restore by: $ tiny restore', success.length)
+    log.info('Backup %s bitmaps successful and restore by: _$ tiny restore_', success.length)
   }
 
   return Promise.resolve(imgs)
