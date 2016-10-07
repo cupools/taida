@@ -53,15 +53,15 @@ function statistics(imgs, detail) {
   log.info(`Compress ___${success.length} bitmaps___ successful and ${fails.length} fails.`)
 
   if (success.length) {
-    log.info(`From ${fix(originTotal)}kb to ${fix(total)}kb, saving ___${fix(1e5 - total / originTotal * 1e5)}%___.`)
+    log.info(`From ${fix(originTotal)}kb to ${fix(total)}kb, saving ___${fix(1e5 - total / originTotal * 1e5)}%___.\n`)
   }
 
   if (detail) {
     log.info('Results: ')
-    success.forEach(img => log.info('___√___ %s %skb -> %skb', img.path, fix(img.origin.size), fix(img.size)))
+    success.forEach(img => log.info('___√___ %s: %skb -> %skb', img.path, fix(img.origin.size), fix(img.size)))
   }
 
-  fails.forEach(img => log.error('× %s %s', img.path, img.error.message))
+  fails.forEach(img => log.info('× %s: %s'.red, img.path, img.error.message))
 
   return Promise.resolve(imgs)
 }
@@ -81,8 +81,6 @@ function backup(imgs, isBackup) {
         encoding: 'binary'
       })
     })
-
-    log.info('Backup %s bitmaps successful and restore by: _$ tiny restore_', success.length)
   }
 
   return Promise.resolve(imgs)

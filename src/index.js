@@ -8,7 +8,7 @@ import progress from './utils/progress'
 
 export default function (options) {
   if (!lint(options)) {
-    return Promise.reject('exit for unexpect options')
+    return Promise.reject(new Error('exit for unexpect options'))
   }
 
   let {pattern, alternate} = options
@@ -20,7 +20,7 @@ export default function (options) {
     .reduce((ret, arr) => ret.concat(arr), [])
 
   if (!resources.length) {
-    return Promise.reject('exit for no mapped bitmaps')
+    return Promise.reject(new Error('exit for no matched bitmap'))
   }
 
   let bar = progress(resources.length)
