@@ -67,14 +67,15 @@ function statistics(imgs, detail) {
 }
 
 function backup(imgs, isBackup) {
+  // clear dir to avoid unexpect restore
+  fs.emptyDirSync(BACKUP_PATH)
+
   if (!isBackup) {
     return Promise.resolve(imgs)
   }
 
   let success = imgs.filter(img => !img.error)
   if (success.length) {
-    fs.emptyDirSync(BACKUP_PATH)
-
     success.forEach(img => {
       let {path, origin} = img
       fs.outputFileSync(Path.resolve(BACKUP_PATH, path), origin.buffer, {

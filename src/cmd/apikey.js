@@ -9,7 +9,7 @@ export default {
         let {success, fail} = ret
         log('  %s bitmaps successful and %s failed', success.length, fail.length)
       })
-      .catch(handleError)
+      .catch(log.error.bind(log))
   },
   use(key) {
     return apikey
@@ -62,8 +62,4 @@ export default {
   edit() {
     return apikey.edit()
   }
-}
-
-function handleError(error) {
-  log.error(error)
 }

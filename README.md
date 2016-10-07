@@ -9,7 +9,7 @@ Compress images by [https://tinypng.com](https://tinypng.com)
 - [x] Apikeys validation and auto switch within presets
 - [x] Backup and restore compressed bitmaps
 - [x] Friendly information reporters
-- [ ] Test coverage
+- [x] Test coverage
 - [ ] Documentation
 - [ ] Publish npm
 
