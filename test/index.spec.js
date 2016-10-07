@@ -5,7 +5,7 @@ import fs from 'fs-extra'
 import nock from 'nock'
 
 import { writeKeys } from './utils'
-import tinifier from '../src/index'
+import taida from '../src/index'
 import apikey from '../src/apikey'
 
 describe('index', function () {
@@ -54,7 +54,7 @@ describe('index', function () {
       alternate: true
     }
 
-    tinifier(option)
+    taida(option)
       .then(() => {
         done()
       })
@@ -64,7 +64,7 @@ describe('index', function () {
   })
 
   it('should exit with unexpected option', function (done) {
-    tinifier({})
+    taida({})
       .then(() => {
         done(new Error('unexpected option'))
       })
@@ -78,7 +78,7 @@ describe('index', function () {
       pattern: 'undefined.png'
     }
 
-    tinifier(option)
+    taida(option)
       .then(() => {
         done(new Error('unexpected option'))
       })
@@ -112,12 +112,12 @@ describe('index', function () {
     let option = {
       pattern: 'test/tmp/{1,2,bad}.png',
       alternate: true,
-      dest: 'test/dest'
+      dest: 'test/tmp/dest'
     }
 
-    tinifier(option)
+    taida(option)
       .then(() => {
-        expect(fs.readFileSync('test/dest/1.png')).to.not.be.null
+        expect(fs.readFileSync('test/tmp/dest/1.png')).to.not.be.null
         done()
       })
       .catch(err => {

@@ -1,5 +1,5 @@
 {
-  "name": "tinifier",
+  "name": "taida",
   "version": "0.1.0",
   "description": "Compress images by https://tinypng.com",
   "main": "index.js",
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/cupools/tinifier.git"
+    "url": "git://github.com/cupools/taida.git"
   },
   "keywords": [
     "tinypng",
@@ -24,9 +24,9 @@
   "author": "liyh",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/cupools/tinifier/issues"
+    "url": "https://github.com/cupools/taida/issues"
   },
-  "homepage": "https://github.com/cupools/tinifier#readme",
+  "homepage": "https://github.com/cupools/taida#readme",
   "dependencies": {
     "babel-runtime": "^6.11.6",
     "colors": "^1.1.2",

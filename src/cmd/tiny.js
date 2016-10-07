@@ -15,7 +15,7 @@ export default {
       .map(f => glob.sync(f))
       .reduce((ret, arr) => ret.concat(arr), [])
 
-    log.info(`\n  __Tinifier    version: ${pkg.version}__\n`)
+    log.info(`\n  __taida    version: ${pkg.version}__\n`)
 
     if (resources.length) {
       log.info(`Found ${resources.length} bitmaps and starting...`)

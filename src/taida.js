@@ -2,7 +2,7 @@ import tinify from 'tinify'
 
 import apikey from './apikey'
 
-const tinifier = function (buffer) {
+const taida = function (buffer) {
   return compress(buffer).catch(err => handleError(compress, err))
 }
 
@@ -61,7 +61,7 @@ function handleError(fallback, ret) {
   return Promise.reject(error)
 }
 
-tinifier.tinify = tinify
-tinifier.apikey = apikey
+taida.tinify = tinify
+taida.apikey = apikey
 
-export default tinifier
+export default taida

@@ -2,7 +2,7 @@ import Path from 'path'
 import fs from 'fs-extra'
 import glob from 'glob'
 
-import tinifier from './tinifier'
+import taida from './taida'
 import lint from './lint'
 import progress from './utils/progress'
 
@@ -12,7 +12,7 @@ export default function (options) {
   }
 
   let {pattern, alternate} = options
-  tinifier.apikey.alternate = alternate === undefined || !!alternate
+  taida.apikey.alternate = alternate === undefined || !!alternate
 
   let resources = []
     .concat(pattern)
@@ -43,7 +43,7 @@ export default function (options) {
   }
 
   let compressP = function (img) {
-    return tinifier(img.buffer)
+    return taida(img.buffer)
       .then(
         ret => Promise.resolve(Object.assign({}, img, ret))
       )

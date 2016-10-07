@@ -6,10 +6,10 @@ import nock from 'nock'
 
 import {writeKeys} from './utils'
 
-import tinifier from '../src/tinifier'
+import taida from '../src/taida'
 import apikey from '../src/apikey'
 
-describe('tinifier', function () {
+describe('taida', function () {
   this.timeout(1e4)
 
   const pathProd = apikey.__path
@@ -45,7 +45,7 @@ describe('tinifier', function () {
         .once()
         .reply(200, buffer)
 
-      tinifier(buffer)
+      taida(buffer)
         .then(data => {
           expect(data).to.have.property('buffer')
             .that.to.be.an.instanceof(Buffer)
@@ -69,7 +69,7 @@ describe('tinifier', function () {
 
     it('get correct callback', function (done) {
       apikey.depress('xxx')
-      tinifier(buffer)
+      taida(buffer)
         .then(() => done(new Error('should not resolve promise')))
         .catch(err => {
           expect(err).to.have.property('message')
@@ -88,7 +88,7 @@ describe('tinifier', function () {
         .once()
         .reply(415, '{"error":"Unsupported","message":"Oops!"}')
 
-      tinifier(buffer)
+      taida(buffer)
         .then(() => done(new Error('should not resolve promise')))
         .catch(err => {
           expect(err).to.have.property('message')
@@ -107,7 +107,7 @@ describe('tinifier', function () {
         .once()
         .reply(401, '{"error":"Unauthorized","message":"Oops!"}')
 
-      tinifier(buffer)
+      taida(buffer)
         .then(() => done('should not resolve promise'))
         .catch(err => {
           expect(err).to.have.property('message')
@@ -138,7 +138,7 @@ describe('tinifier', function () {
         .once()
         .reply(200, buffer)
 
-      tinifier(buffer)
+      taida(buffer)
         .then(data => {
           expect(data).to.have.property('buffer')
             .that.to.be.an.instanceof(Buffer)

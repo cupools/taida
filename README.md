@@ -1,4 +1,6 @@
-## Tinifier
+## taida
+
+> 贵方、怠惰ですねぇ——
 
 Compress images by [https://tinypng.com](https://tinypng.com)
 
