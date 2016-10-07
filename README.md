@@ -1,7 +1,5 @@
 ## taida
 
-> 贵方、怠惰ですねぇ——
-
 Compress images by [https://tinypng.com](https://tinypng.com)
 
 ## TODO
@@ -10,7 +8,7 @@ Compress images by [https://tinypng.com](https://tinypng.com)
 - [x] Basic CLI
 - [x] Apikeys validation and auto switch within presets
 - [x] Backup and restore compressed bitmaps
-- [ ] Advanced information reporters
+- [x] Friendly information reporters
 - [ ] Test coverage
 - [ ] Documentation
 - [ ] Publish npm
