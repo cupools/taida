@@ -64,6 +64,21 @@ describe('tinifier', function () {
     })
   })
 
+  describe('unexpected apikey', function () {
+    let buffer = new Buffer(10)
+
+    it('get correct callback', function (done) {
+      apikey.depress('xxx')
+      tinifier(buffer)
+        .then(() => done(new Error('should not resolve promise')))
+        .catch(err => {
+          expect(err).to.have.property('message')
+        })
+        .then(done)
+        .catch(done)
+    })
+  })
+
   describe('unexpected bitmap', function () {
     let buffer = fs.readFileSync('test/fixtures/bad.png')
 

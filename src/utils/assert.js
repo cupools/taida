@@ -8,13 +8,6 @@ export default {
     }
     return true
   },
-  oneOf(actual, expect, info) {
-    if (expect.indexOf(actual) < 0) {
-      log.error(info)
-      return false
-    }
-    return true
-  },
   isNotNull(actual, info) {
     if (actual != null) {
       return true

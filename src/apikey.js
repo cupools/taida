@@ -34,6 +34,7 @@ export default {
     // revise invalid keys
     let now = Date.now()
     let needsUpdate = false
+
     let revise = json.map(item => {
       if (!item.valid && now - item.date > 1 * 24 * 3600 * 1e3) {
         needsUpdate = true
@@ -70,7 +71,7 @@ export default {
   },
 
   depress(key) {
-    let index = this.__apikeys.map(item => item.key).indexOf(key)
+    let index = (this.__apikeys || this.apikeys).map(item => item.key).indexOf(key)
 
     if (this.__apikeys[index].valid) {
       this.__apikeys[index].valid = false

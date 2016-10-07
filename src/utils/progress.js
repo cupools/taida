@@ -1,22 +1,14 @@
 import Progress from 'progress'
 
 export default function (total) {
-  let bar
+  const bar = new Progress('  Compression [:bar] :percent', {
+    incomplete: ' ',
+    width: 20,
+    total
+  })
 
-  if (total) {
-    bar = new Progress('  Compression [:bar] :percent', {
-      incomplete: ' ',
-      width: 20,
-      total
-    })
-
-    // show the process bar immediately
-    bar.tick(0)
-  } else {
-    bar = {
-      tick() {}
-    }
-  }
+  // show the process bar immediately
+  bar.tick(0)
 
   return bar
 }

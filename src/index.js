@@ -4,7 +4,6 @@ import glob from 'glob'
 
 import tinifier from './tinifier'
 import lint from './lint'
-import log from './utils/log'
 import progress from './utils/progress'
 
 export default function (options) {
@@ -20,8 +19,11 @@ export default function (options) {
     .map(f => glob.sync(f))
     .reduce((ret, arr) => ret.concat(arr), [])
 
+  if (!resources.length) {
+    return Promise.reject('exit for no mapped bitmaps')
+  }
+
   let bar = progress(resources.length)
-  let handleError = err => log.error(err.message)
 
   let readFile = function (path) {
     return fs.readFileSync(path)
@@ -73,10 +75,7 @@ export default function (options) {
   let resourcesP = resources
     .map(wrapImg)
     .map(compressP)
-    .map(p => p
-      .then(outputP(options.dest))
-      .catch(handleError)
-    )
+    .map(p => p.then(outputP(options.dest)))
 
   return Promise
     .all(resourcesP)

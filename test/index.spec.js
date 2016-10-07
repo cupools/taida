@@ -72,4 +72,56 @@ describe('index', function () {
         done()
       })
   })
+
+  it('should exit with empty bitmaps', function (done) {
+    let option = {
+      pattern: 'undefined.png'
+    }
+
+    tinifier(option)
+      .then(() => {
+        done(new Error('unexpected option'))
+      })
+      .catch(() => {
+        done()
+      })
+  })
+
+  it('should work with specified dest', function (done) {
+    writeKeys({
+      key: 'xxx'
+    })
+
+    nock('https://api.tinify.com')
+      .post('/shrink')
+      .twice()
+      .reply(201, {}, {
+        Location: 'https://api.tinify.com/some/location'
+      })
+
+    nock('https://api.tinify.com')
+      .post('/shrink')
+      .once()
+      .reply(415, '{"error":"bad","message":"Oops!"}')
+
+    nock('https://api.tinify.com')
+      .get('/some/location')
+      .thrice()
+      .reply(200, new Buffer(10))
+
+    let option = {
+      pattern: 'test/tmp/{1,2,bad}.png',
+      alternate: true,
+      dest: 'test/dest'
+    }
+
+    tinifier(option)
+      .then(() => {
+        expect(fs.readFileSync('test/dest/1.png')).to.not.be.null
+        done()
+      })
+      .catch(err => {
+        done(err)
+      })
+  })
 })
