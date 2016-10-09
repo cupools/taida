@@ -14,10 +14,12 @@ export default function (options) {
   let {pattern, alternate} = options
   taida.apikey.alternate = alternate === undefined || !!alternate
 
-  let resources = []
-    .concat(pattern)
-    .map(f => glob.sync(f))
-    .reduce((ret, arr) => ret.concat(arr), [])
+  let resources = [...new Set(
+    []
+      .concat(pattern)
+      .map(f => glob.sync(f))
+      .reduce((ret, arr) => ret.concat(arr), [])
+  )]
 
   if (!resources.length) {
     return Promise.reject(new Error('exit for no matched bitmap'))
