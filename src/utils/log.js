@@ -29,7 +29,7 @@ log.error = function (...args) {
 }
 
 function render(str) {
-  return !str.includes('_')
+  return String.includes(str, '_')
     ? str
     : str
       .replace(/___([\w\W]+?)___/, (_, p1) => p1.green)

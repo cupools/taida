@@ -51,7 +51,7 @@ function handleError(fallback, ret) {
   let {_key, error, buffer} = ret
   let {message} = error
 
-  if (message.includes(401)) {
+  if (String.includes(message, 401)) {
     // Credentials are invalid (HTTP 401/Unauthorized)
     // should change another apikey and fallback to compress
     apikey.depress(_key)
