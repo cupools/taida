@@ -20,6 +20,7 @@ Compress images by [https://tinypng.com](https://tinypng.com)
 
 ```bash
 $ tiny --help
+
   Usage: tiny [options] [files ...]
 
 
@@ -51,8 +52,8 @@ $ tiny-apikey --help
 
   Commands:
 
-    add <keys ...>     add apikeys for usage
-    delete <key>  remove apikey
+    add <key>     add apikeys for usage
+    delete <key>  remove apikeys by
     use <key>     suggest specified key to be used first
     list          show apikeys list and compress count
     edit          open .apikeys in editor
