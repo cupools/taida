@@ -1,4 +1,6 @@
 ## taida
+[![Build Status](https://travis-ci.org/cupools/taida.svg?branch=master)](https://travis-ci.org/cupools/taida)
+[![Coverage Status](https://coveralls.io/repos/github/cupools/taida/badge.svg?branch=master)](https://coveralls.io/github/cupools/taida?branch=master)
 
 Compress images by [https://tinypng.com](https://tinypng.com)
 
