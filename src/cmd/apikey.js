@@ -7,7 +7,7 @@ export default {
       .add(keys)
       .then(ret => {
         let {success, fail} = ret
-        log('  %s bitmaps successful and %s failed', success.length, fail.length)
+        log.info('%s bitmaps successful and %s failed', success.length, fail.length)
       })
       .catch(log.error.bind(log))
   },
@@ -15,20 +15,20 @@ export default {
     return apikey
       .use(key)
       .then(k => {
-        log('  set %s to use first', k)
+        log.info('set %s to use first', k)
       })
       .catch(k => {
-        log('  %s is not exist', k)
+        log.info('%s is not exist', k)
       })
   },
   delete(key) {
     return apikey
       .delete(key)
       .then(k => {
-        log('  delete %s successful', k)
+        log.info('delete %s successful', k)
       })
       .catch(k => {
-        log('  %s is not exist', k)
+        log.info('%s is not exist', k)
       })
   },
   list() {
@@ -36,15 +36,13 @@ export default {
       .list()
       .then(keys => {
         if (keys.length) {
-          log(
-            keys
-              .map((item, index) => (
-                `  ${index}. ${item.key} (${item.valid ? 'valid' : 'invalid'}${index === 0 ? ', default' : ''})`
-              ))
-              .join('\n')
-          )
+          keys
+            .map((item, index) => (
+              index + '.' + item.key + ' ' + (item.valid ? '√'.green : '×'.red)
+            ))
+            .forEach(txt => log.info(txt))
         } else {
-          log('  empty api keys\n  $ tiny-apikey add <keys>')
+          log.info('empty api keys, try _$ tiny-apikey add <keys>_')
         }
       })
   },
@@ -52,8 +50,7 @@ export default {
     return apikey
       .clear()
       .then(() => {
-        log('  remove all api keys successful')
-        log('  $ tiny-apikey add <keys>')
+        log.info('remove all api keys successful. try _$ tiny-apikey add <keys>_')
       })
   },
   supply() {
