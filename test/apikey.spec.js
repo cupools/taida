@@ -41,8 +41,8 @@ describe('apikey', function () {
       writeKeys({
         key: 'xxx'
       })
-      expect(apikey.get()).to.be.equal('xxx')
-      expect(apikey.get()).to.be.equal('xxx')
+      expect(apikey.get()).to.equal('xxx')
+      expect(apikey.get()).to.equal('xxx')
     })
 
     it('should get valid key', function () {
@@ -53,7 +53,7 @@ describe('apikey', function () {
         key: 'yyy',
         valid: true
       }])
-      expect(apikey.get()).to.be.equal('yyy')
+      expect(apikey.get()).to.equal('yyy')
     })
 
     it('should revise invalid apikey created long ago', function () {
@@ -65,7 +65,7 @@ describe('apikey', function () {
         key: 'yyy',
         valid: true
       }])
-      expect(apikey.get()).to.be.equal('xxx')
+      expect(apikey.get()).to.equal('xxx')
 
       let json = readKeys()
 
@@ -82,11 +82,11 @@ describe('apikey', function () {
       }])
 
       apikey.alternate = false
-      expect(apikey.get()).to.be.equal('xxx')
-      apikey.depress('xxx')
+      expect(apikey.get()).to.equal('xxx')
+      expect(apikey.depress('xxx')).to.equal('xxx')
       expect(apikey.get()).to.be.null
       apikey.alternate = true
-      expect(apikey.get()).to.be.equal('yyy')
+      expect(apikey.get()).to.equal('yyy')
 
       apikey.clear()
       expect(apikey.get()).to.be.null
@@ -117,11 +117,12 @@ describe('apikey', function () {
       }])
 
       expect(apikey.get()).to.equal('xxx')
-      apikey.depress('xxx')
+      expect(apikey.depress('xxx')).to.equal('xxx')
       expect(apikey.get()).to.equal('yyy')
-      apikey.depress('yyy')
+      expect(apikey.depress('yyy')).to.equal('yyy')
       expect(apikey.get()).to.be.null
-      apikey.depress('zzz')
+      expect(apikey.depress('zzz')).to.equal('zzz')
+      expect(apikey.depress('undefined')).to.be.false
 
       let json = readKeys()
       expect(json.apikeys).to.be.lengthOf(3)
@@ -132,12 +133,12 @@ describe('apikey', function () {
 
   describe('.add', function () {
     it('should work', function () {
-      apikey.add('xxx')
+      expect(apikey.add('xxx')).to.contain('xxx')
       expect(readKeys()).to.have.deep.property('apikeys[0].key', 'xxx')
-      apikey.add('xxx')
+      expect(apikey.add('xxx')).to.be.false
       expect(readKeys()).to.have.property('apikeys')
         .that.to.be.lengthOf(1)
-      apikey.add('yyy')
+      expect(apikey.add('yyy')).to.contain('yyy')
       expect(readKeys()).to.have.property('apikeys')
         .that.to.be.lengthOf(2)
     })
@@ -145,15 +146,15 @@ describe('apikey', function () {
 
   describe('.use', function () {
     it('should work', function () {
-      apikey.add('xxx')
+      expect(apikey.add('xxx')).to.contain('xxx')
       expect(readKeys()).to.have.deep.property('apikeys[0].key', 'xxx')
-      apikey.add('yyy')
+      expect(apikey.add('yyy')).to.contain('yyy')
       expect(readKeys()).to.have.deep.property('apikeys[1].key', 'yyy')
-      apikey.use('yyy')
+      expect(apikey.use('yyy')).to.equal('yyy')
       expect(readKeys()).to.have.deep.property('apikeys[0].key', 'yyy')
-      apikey.use(1)
+      expect(apikey.use(1)).to.equal('xxx')
       expect(readKeys()).to.have.deep.property('apikeys[0].key', 'xxx')
-      apikey.use(2)
+      expect(apikey.use(2)).to.be.false
       expect(readKeys()).to.have.deep.property('apikeys[0].key', 'xxx')
     })
   })
@@ -168,12 +169,13 @@ describe('apikey', function () {
         key: 'zzz'
       }])
 
-      apikey.delete('xxx')
+      expect(apikey.delete('xxx')).to.equal('xxx')
       expect(readKeys()).to.have.deep.property('apikeys[0].key', 'yyy')
-      apikey.delete('xxx')
-      apikey.delete(1)
-      expect(readKeys()).to.have.deep.property('apikeys[0].key', 'yyy')
-        .and.not.have.deep.property('apikeys[1]')
+      expect(apikey.delete('xxx')).to.be.false
+      expect(apikey.delete(1)).to.equal('zzz')
+      expect(readKeys()).to.have.property('apikeys')
+        .that.to.be.lengthOf(1)
+        .that.to.have.deep.property('[0].key', 'yyy')
     })
   })
 
@@ -186,7 +188,7 @@ describe('apikey', function () {
       }, {
         key: 'zzz'
       }])
-      apikey.list()
+      expect(apikey.list()).to.be.lengthOf(3)
     })
   })
 
@@ -199,7 +201,7 @@ describe('apikey', function () {
       }, {
         key: 'zzz'
       }])
-      apikey.clear()
+      expect(apikey.clear()).to.be.empty
       expect(apikey.get()).to.be.null
     })
   })

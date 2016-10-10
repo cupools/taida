@@ -69,29 +69,33 @@ export default {
   depress(key) {
     let index = (this.__apikeys || this.apikeys).map(item => item.key).indexOf(key)
 
+    if (!this.__apikeys[index]) {
+      return false
+    }
+
     if (this.__apikeys[index].valid) {
       this.__apikeys[index].valid = false
       this.__apikeys[index].date = Date.now()
 
       this.__write(this.__apikeys)
     }
+
+    return key
   },
 
   add(args) {
     let {apikeys} = this
-    let keys = [].concat(args)
-
-    // TODO, api key validation
-    let [fail, success] = keys
+    let keys = apikeys.map(item => item.key)
+    let success = []
+      .concat(args)
       .reduce(
         (ret, key) => {
-          let [left, right] = ret
-          if (apikeys.filter(item => item.key === key).length) {
-            return [left.concat(key), right]
+          if (Array.includes(keys, key)) {
+            return ret
           }
-          return [left, right.concat(key)]
+          return ret.concat(key)
         },
-        [[], []]
+        []
       )
 
     let revise = success
@@ -104,50 +108,49 @@ export default {
     this.__apikeys = null
     this.__write(apikeys.concat(revise))
 
-    return Promise.resolve({
-      fail,
-      success
-    })
+    return success.length ? success : false
   },
 
   use(key) {
     let {apikeys} = this
+    let keys = apikeys.map(item => item.key)
     let index = isNaN(key)
-      ? apikeys.reduce((ret, item, idx) => (item.key === key ? idx : ret), null)
+      ? keys.indexOf(key)
       : Number(key)
 
     if (index == null || !apikeys[index]) {
-      return Promise.reject(key)
+      return false
     }
 
     this.__apikeys = null
     this.__write([apikeys[index], ...apikeys.slice(0, index), ...apikeys.slice(index + 1)])
-    return Promise.resolve(key)
+    return keys[index]
   },
 
   delete(key) {
     let {apikeys} = this
+    let keys = apikeys.map(item => item.key)
     let index = isNaN(key)
-      ? apikeys.reduce((ret, item, idx) => (item.key === key ? idx : ret), null)
+      ? keys.indexOf(key)
       : Number(key)
 
     if (index == null || !apikeys[index]) {
-      return Promise.reject(key)
+      return false
     }
 
     this.__apikeys = null
     this.__write(apikeys.slice(0, index).concat(apikeys.slice(index + 1)))
-    return Promise.resolve(key)
+    return keys[index]
   },
 
   clear() {
     this.__apikeys = null
     this.__write([])
-    return Promise.resolve()
+    return []
   },
 
   list() {
-    return Promise.resolve(this.apikeys)
+    return this.apikeys
   },
 
   edit() {
