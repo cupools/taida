@@ -2,6 +2,7 @@ import Path from 'path'
 import fs from 'fs-extra'
 import glob from 'glob'
 
+import apikey from './apikey'
 import taida from './taida'
 import lint from './lint'
 import progress from './utils/progress'
@@ -12,7 +13,7 @@ export default function (options) {
   }
 
   let {pattern, alternate} = options
-  taida.apikey.alternate = alternate === undefined || !!alternate
+  apikey.alternate = alternate === undefined || !!alternate
 
   let resources = [...new Set(
     []

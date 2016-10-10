@@ -61,7 +61,4 @@ function handleError(fallback, ret) {
   return Promise.reject(error)
 }
 
-taida.tinify = tinify
-taida.apikey = apikey
-
 export default taida
