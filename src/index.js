@@ -12,7 +12,7 @@ export default function (options) {
     return Promise.reject(new Error('exit for unexpect options'))
   }
 
-  let {pattern, alternate} = options
+  let { pattern, alternate } = options
   apikey.alternate = alternate === undefined || !!alternate
 
   let resources = [...new Set(
@@ -66,7 +66,7 @@ export default function (options) {
         return Promise.resolve(img)
       }
 
-      let {path, buffer} = img
+      let { path, buffer } = img
       let output = dest ? Path.join(dest, Path.basename(path)) : path
 
       writeFile(output, buffer)

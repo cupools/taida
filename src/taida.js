@@ -48,8 +48,8 @@ function handleError(fallback, ret) {
     return Promise.reject(ret)
   }
 
-  let {_key, error, buffer} = ret
-  let {message} = error
+  let { _key, error, buffer } = ret
+  let { message } = error
 
   if (String.includes(message, 401)) {
     // Credentials are invalid (HTTP 401/Unauthorized)

@@ -10,7 +10,7 @@ const schemes = [{
 
 export default function (opt) {
   return schemes.every(rule => {
-    let {param, typeOf, necessary} = rule
+    let { param, typeOf, necessary } = rule
     let actual = opt[param]
     let ret = true
 

@@ -3,7 +3,7 @@
 import { expect } from 'chai'
 import fs from 'fs-extra'
 
-import {writeKeys, readKeys} from './utils'
+import { writeKeys, readKeys } from './utils'
 import apikey from '../src/apikey'
 
 describe('apikey', function () {

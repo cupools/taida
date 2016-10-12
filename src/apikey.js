@@ -184,7 +184,7 @@ export default {
 function read(keypath) {
   try {
     let json = fs.readJsonSync(keypath)
-    let {apikeys} = json
+    let { apikeys } = json
 
     return apikeys
   } catch (e) {
