@@ -14,7 +14,7 @@ Compress images by [https://tinypng.com](https://tinypng.com)
 - [x] Test coverage
 - [x] Display apikey's validation in `$ tiny-apikey list`
 - [x] Remove promise in apikey's method
-- [ ] Temporary apikey
+- [x] Temporary apikey
 - [ ] Documentation
 - [ ] Publish npm
 

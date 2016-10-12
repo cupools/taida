@@ -94,12 +94,39 @@ describe('apikey', function () {
   })
 
   describe('.set', function () {
-    it('should not have change', function () {
+    it('should set temporary apikey', function () {
+      writeKeys([])
+      apikey.apikeys = 'xxx'
+      expect(apikey.apikeys).to.have.deep.property('[0].key', 'xxx')
+      expect(apikey.apikeys).to.have.deep.property('[0].temporary', true)
+      apikey.apikeys = ['yyy', 'zzz']
+      expect(apikey.apikeys).to.have.deep.property('[0].key', 'yyy')
+      expect(apikey.apikeys).to.be.lengthOf(2)
+      expect(readKeys()).to.have.property('apikeys')
+        .to.be.empty
+    })
+
+    it('should not write to locate db', function () {
       writeKeys({
         key: 'xxx'
       })
-      apikey.apikeys = 'abc'
-      expect(apikey.apikeys).to.have.deep.property('[0].key')
+      expect(apikey.apikeys).to.have.deep.property('[0].key', 'xxx')
+      apikey.apikeys = ['yyy', 'zzz']
+      expect(apikey.apikeys).to.have.deep.property('[0].key', 'yyy')
+      expect(apikey.apikeys).to.have.deep.property('[0].temporary', true)
+      expect(readKeys()).to.have.property('apikeys')
+        .to.be.lengthOf(1)
+    })
+
+    it('should be depress but not write to locate db', function () {
+      writeKeys({
+        key: 'xxx'
+      })
+      apikey.apikeys = 'yyy'
+      expect(apikey.depress('xxx')).to.be.false
+      expect(apikey.depress('yyy')).to.equal('yyy')
+      expect(readKeys()).to.have.property('apikeys')
+        .to.have.deep.property('[0].key', 'xxx')
     })
   })
 

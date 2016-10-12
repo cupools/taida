@@ -1,6 +1,7 @@
 import Progress from 'progress'
 
 export default function (total) {
+  // TODO disable display progress
   const bar = new Progress('  Compression [:bar] :percent', {
     incomplete: ' ',
     width: 20,

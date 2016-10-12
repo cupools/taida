@@ -52,7 +52,15 @@ export default {
     return this.__apikeys
   },
 
-  set apikeys(val) {
+  set apikeys(keys) {
+    let date = Date.now()
+    let revise = [].concat(keys).map(key => ({
+      date,
+      key,
+      valid: true,
+      temporary: true
+    }))
+    this.__apikeys = revise
     return this.__apikeys
   },
 
@@ -73,11 +81,14 @@ export default {
       return false
     }
 
-    if (this.__apikeys[index].valid) {
-      this.__apikeys[index].valid = false
-      this.__apikeys[index].date = Date.now()
+    let item = this.__apikeys[index]
+    if (item.valid) {
+      item.valid = false
+      item.date = Date.now()
 
-      this.__write(this.__apikeys)
+      if (!item.temporary) {
+        this.__write(this.__apikeys)
+      }
     }
 
     return key
@@ -166,7 +177,7 @@ export default {
   },
 
   __write(apikeys) {
-    return write(this.__path, apikeys)
+    return write(this.__path, apikeys.filter(key => !key.temporary))
   }
 }
 
