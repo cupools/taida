@@ -26,7 +26,7 @@ export default function (options) {
     return Promise.reject(new Error('exit for no matched bitmap'))
   }
 
-  let bar = progress(resources.length)
+  let bar = progress(resources.length, options.progress)
 
   let readFile = function (path) {
     return fs.readFileSync(path)

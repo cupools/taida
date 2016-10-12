@@ -156,4 +156,35 @@ describe('index', function () {
         done(err)
       })
   })
+
+  it('should work with progress', function (done) {
+    writeKeys({
+      key: 'xxx'
+    })
+
+    nock('https://api.tinify.com')
+      .post('/shrink')
+      .once()
+      .reply(201, {}, {
+        Location: 'https://api.tinify.com/some/location'
+      })
+
+    nock('https://api.tinify.com')
+      .get('/some/location')
+      .once()
+      .reply(200, new Buffer(10))
+
+    let option = {
+      pattern: 'test/tmp/0.png',
+      progress: true
+    }
+
+    taida(option)
+      .then(() => {
+        done()
+      })
+      .catch(err => {
+        done(err)
+      })
+  })
 })

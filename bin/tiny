@@ -11,6 +11,7 @@ program
   .option('    --detail', 'show more detail')
   .option('    --no-alternate', 'only use the first apikey even though invalid')
   .option('    --no-backup', 'do not backup latest compressed bitmaps for restore')
+  .option('    --no-progress', 'do not display progress bar')
   .on('--help', function () {
     console.log(
       [
@@ -40,12 +41,14 @@ if (!program.args[0] || program.args[0].constructor !== program.Command) {
   var detail = !!program.detail
   var alternate = !!program.alternate
   var backup = !!program.backup
+  var progress = !!program.progress
 
   tiny.main({
     pattern: pattern,
     dest: dest,
     detail: detail,
     alternate: alternate,
-    backup: backup
+    backup: backup,
+    progress: progress
   })
 }

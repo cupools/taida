@@ -38,7 +38,8 @@ $ tiny --help
     -d, --dest <path>   directory path to output images
         --detail        show more detail
         --no-alternate  only use the first apikey even though invalid
-        --no-backup     do not backup latest compressed bitmaps for restore
+        --no-backup     disable backup latest compressed bitmaps for restore
+        --no-progress   disable progress bar
 
   Examples:
 

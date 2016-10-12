@@ -1,7 +1,12 @@
 import Progress from 'progress'
 
-export default function (total) {
-  // TODO disable display progress
+export default function (total, display) {
+  if (!display) {
+    return {
+      tick() {}
+    }
+  }
+
   const bar = new Progress('  Compression [:bar] :percent', {
     incomplete: ' ',
     width: 20,
