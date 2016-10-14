@@ -78,6 +78,7 @@ function backup(imgs, isBackup) {
   if (success.length) {
     success.forEach(img => {
       let { path, origin } = img
+      // TODO, fix backup path
       fs.outputFileSync(Path.resolve(BACKUP_PATH, path), origin.buffer, {
         encoding: 'binary'
       })

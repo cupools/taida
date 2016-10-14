@@ -17,7 +17,7 @@ program
 
 program
   .command('delete <key>')
-  .description('remove apikeys by')
+  .description('remove apikeys by key string or item index')
   .action(function (keys) {
     apikey.delete(keys)
   })
@@ -31,7 +31,7 @@ program
 
 program
   .command('list')
-  .description('show apikeys list and compress count')
+  .description('show apikeys list')
   .action(function () {
     apikey.list()
   })

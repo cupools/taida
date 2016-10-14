@@ -15,6 +15,8 @@ Compress images by [https://tinypng.com](https://tinypng.com)
 - [x] Display apikey's validation in `$ tiny-apikey list`
 - [x] Remove promise in apikey's method
 - [x] Temporary apikey
+- [ ] Pass compressed bitmaps
+- [ ] Bug in backup path
 - [ ] Documentation
 - [ ] Publish npm
 
@@ -56,10 +58,10 @@ $ tiny-apikey --help
 
   Commands:
 
-    add <key>     add apikeys for usage
-    delete <key>  remove apikeys by
+    add <key ...>     add apikeys for usage
+    delete <key>  remove apikeys by key or item index
     use <key>     suggest specified key to be used first
-    list          show apikeys list and compress count
+    list          show apikeys list
     edit          open .apikeys in editor
     supply        open http://tinypng.com to supply api key
     clear         remove all apikeys
