@@ -15,11 +15,16 @@ export default function (options) {
   let { pattern, alternate } = options
   apikey.alternate = alternate === undefined || !!alternate
 
+  let isBitmap = function (p) {
+    return /\.(jpg|jpeg|png)$/.test(p)
+  }
+
   let resources = [...new Set(
     []
       .concat(pattern)
       .map(f => glob.sync(f))
       .reduce((ret, arr) => ret.concat(arr), [])
+      .filter(isBitmap)
   )]
 
   if (!resources.length) {

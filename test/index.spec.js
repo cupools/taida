@@ -4,6 +4,7 @@ import { expect } from 'chai'
 import fs from 'fs-extra'
 import nock from 'nock'
 
+import './common'
 import { writeKeys } from './utils'
 import taida from '../src/index'
 import apikey from '../src/apikey'
@@ -27,7 +28,7 @@ describe('index', function () {
     fs.copySync('test/fixtures', 'test/tmp')
   })
 
-  it('should work', function (done) {
+  it('should work', function () {
     writeKeys({
       key: 'xxx'
     })
@@ -54,40 +55,28 @@ describe('index', function () {
       alternate: true
     }
 
-    taida(option)
-      .then(() => {
-        done()
-      })
-      .catch(err => {
-        done(err)
-      })
+    return taida(option).should.be.fulfilled
   })
 
-  it('should exit with unexpected option', function (done) {
-    taida({})
-      .then(() => {
-        done(new Error('unexpected option'))
-      })
-      .catch(() => {
-        done()
-      })
+  it('should exit with unexpected option', function () {
+    return taida({}).should.be.rejected
   })
 
-  it('should exit with empty bitmaps', function (done) {
+  it('should exit with empty bitmaps', function () {
     let option = {
       pattern: 'undefined.png'
     }
-
-    taida(option)
-      .then(() => {
-        done(new Error('unexpected option'))
-      })
-      .catch(() => {
-        done()
-      })
+    return taida(option).should.be.rejected
   })
 
-  it('should work with specified dest', function (done) {
+  it('should exit with other format', function () {
+    let option = {
+      pattern: 'test/fixtures/text.txt'
+    }
+    return taida(option).should.be.rejected
+  })
+
+  it('should work with specified dest', function () {
     writeKeys({
       key: 'xxx'
     })
@@ -115,17 +104,13 @@ describe('index', function () {
       dest: 'test/tmp/dest'
     }
 
-    taida(option)
+    return taida(option).should.be.fulfilled
       .then(() => {
         expect(fs.readFileSync('test/tmp/dest/1.png')).to.not.be.null
-        done()
-      })
-      .catch(err => {
-        done(err)
       })
   })
 
-  it('should work with duplicate file', function (done) {
+  it('should work with duplicate file', function () {
     writeKeys({
       key: 'xxx'
     })
@@ -147,13 +132,9 @@ describe('index', function () {
       alternate: true
     }
 
-    taida(option)
+    return taida(option).should.be.fulfilled
       .then(imgs => {
         expect(imgs).to.be.lengthOf(2)
-        done()
-      })
-      .catch(err => {
-        done(err)
       })
   })
 
