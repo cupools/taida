@@ -138,7 +138,7 @@ describe('index', function () {
       })
   })
 
-  it('should work with progress', function (done) {
+  it('should work with progress', function () {
     writeKeys({
       key: 'xxx'
     })
@@ -160,12 +160,6 @@ describe('index', function () {
       progress: true
     }
 
-    taida(option)
-      .then(() => {
-        done()
-      })
-      .catch(err => {
-        done(err)
-      })
+    return taida(option).should.be.fulfilled
   })
 })

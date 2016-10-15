@@ -4,6 +4,7 @@ import { expect } from 'chai'
 import fs from 'fs-extra'
 import nock from 'nock'
 
+import './common'
 import { writeKeys } from './utils'
 import apikey from '../src/apikey'
 import tiny from '../src/cmd/tiny'
@@ -28,7 +29,7 @@ describe('cmd/tiny', function () {
   })
 
   describe('.main', function () {
-    it('should work', function (done) {
+    it('should work', function () {
       writeKeys({
         key: 'xxx'
       })
@@ -56,32 +57,18 @@ describe('cmd/tiny', function () {
         backup: false
       }
 
-      tiny
-        .main(option)
-        .then(() => {
-          done()
-        })
-        .catch(err => {
-          done(err)
-        })
+      return tiny.main(option).should.be.fulfilled
     })
 
-    it('should exit for no matched bitmaps', function (done) {
+    it('should exit for no matched bitmaps', function () {
       let option = {
         pattern: 'test/tmp/undefined'
       }
 
-      tiny
-        .main(option)
-        .then(() => {
-          done()
-        })
-        .catch(err => {
-          done(err)
-        })
+      return tiny.main(option).should.be.fulfilled
     })
 
-    it('should pass progress for no success bitmaps', function (done) {
+    it('should pass progress for no success bitmaps', function () {
       nock('https://api.tinify.com')
         .post('/shrink')
         .once()
@@ -92,19 +79,12 @@ describe('cmd/tiny', function () {
         backup: true
       }
 
-      tiny
-        .main(option)
-        .then(() => {
-          done()
-        })
-        .catch(err => {
-          done(err)
-        })
+      return tiny.main(option).should.be.fulfilled
     })
   })
 
   describe('.restore', function () {
-    it('should work', function (done) {
+    it('should work', function () {
       writeKeys({
         key: 'xxx'
       })
@@ -126,10 +106,9 @@ describe('cmd/tiny', function () {
         backup: true
       }
 
-      tiny
-        .main(option)
-        .then((img) => {
-          let {size, origin} = img[0]
+      return tiny.main(option).should.be.fulfilled
+        .then(img => {
+          let { size, origin } = img[0]
           let originSize = origin.size
 
           tiny.restore()
@@ -138,14 +117,10 @@ describe('cmd/tiny', function () {
 
           expect(buffer.length).to.be.equal(originSize)
           expect(buffer.length).to.not.be.equal(size)
-          done()
-        })
-        .catch(err => {
-          done(err)
         })
     })
 
-    it('should pass progress for no success bitmaps', function (done) {
+    it('should pass progress for no success bitmaps', function () {
       nock('https://api.tinify.com')
         .post('/shrink')
         .once()
@@ -156,15 +131,10 @@ describe('cmd/tiny', function () {
         backup: true
       }
 
-      tiny
-        .main(option)
+      return tiny.main(option).should.be.fulfilled
         .then(() => {
           expect(fs.readFileSync.bind(fs, '.backup/test/tmp/bad.png')).to.throw(Error)
           tiny.restore()
-          done()
-        })
-        .catch(err => {
-          done(err)
         })
     })
   })
