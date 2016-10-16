@@ -28,19 +28,7 @@ export default {
       .catch(handleError)
   },
   restore() {
-    let items = glob.sync('**/*.*', {
-      cwd: BACKUP_PATH
-    })
-
-    if (items.length) {
-      items.forEach(path => {
-        let realpath = Path.join(BACKUP_PATH, path)
-        fs.copySync(realpath, path)
-        log.info('%s has been restore', path)
-      })
-    } else {
-      log.info('No usable backup now')
-    }
+    return restore()
   }
 }
 
@@ -98,14 +86,13 @@ function backup(imgs, isBackup) {
 
       fs.outputFileSync(output, origin.buffer, option)
 
-      return {
+      return ret.concat({
         path: Path.resolve(path),
         backup: output
-      }
+      })
     },
     []
   )
-
   fs.outputJSONSync(BACKUP_FILE, db)
   return Promise.resolve(imgs)
 }
