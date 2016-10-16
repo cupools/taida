@@ -7,6 +7,7 @@ import log from '../utils/log'
 import pkg from '../../package.json'
 
 const BACKUP_PATH = Path.join(__dirname, '../..', '.backup')
+const BACKUP_FILE = Path.join(BACKUP_PATH, 'db.json')
 
 export default {
   main(options) {
@@ -66,25 +67,46 @@ function statistics(imgs, detail) {
   return Promise.resolve(imgs)
 }
 
+function restore() {
+  if (!fs.existsSync(BACKUP_FILE)) {
+    log.warn('No usable backup now')
+    return
+  }
+
+  let db = fs.readJSONSync(BACKUP_FILE)
+  db.forEach(item => {
+    let { path, backup } = item
+    fs.copySync(backup, path)
+    log.info('%s has been restore', path)
+  })
+}
+
 function backup(imgs, isBackup) {
-  // clear dir to avoid unexpect restore
-  fs.emptyDirSync(BACKUP_PATH)
+  fs.emptyDirSync(BACKUP_PATH) // clear dir to avoid unexpect restore
 
   if (!isBackup) {
     return Promise.resolve(imgs)
   }
 
   let success = imgs.filter(img => !img.error)
-  if (success.length) {
-    success.forEach(img => {
+  let db = success.reduce(
+    (ret, img, index) => {
       let { path, origin } = img
-      // TODO, fix backup path
-      fs.outputFileSync(Path.resolve(BACKUP_PATH, path), origin.buffer, {
-        encoding: 'binary'
-      })
-    })
-  }
+      let basename = index + Path.basename(path)
+      let output = Path.resolve(BACKUP_PATH, basename)
+      let option = { encoding: 'binary' }
 
+      fs.outputFileSync(output, origin.buffer, option)
+
+      return {
+        path: Path.resolve(path),
+        backup: output
+      }
+    },
+    []
+  )
+
+  fs.outputJSONSync(BACKUP_FILE, db)
   return Promise.resolve(imgs)
 }
 
