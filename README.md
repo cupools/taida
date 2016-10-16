@@ -15,7 +15,6 @@ Compress images by [https://tinypng.com](https://tinypng.com)
 - [x] Display apikey's validation in `$ tiny-apikey list`
 - [x] Remove promise in apikey's method
 - [x] Temporary apikey
-- [ ] Pass compressed bitmaps
 - [ ] Bug in backup path
 - [ ] Documentation
 - [ ] Publish npm
