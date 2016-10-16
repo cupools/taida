@@ -81,6 +81,24 @@ describe('cmd/tiny', function () {
 
       return tiny.main(option).should.be.fulfilled
     })
+
+    it('should pass progress for no success bitmaps', function () {
+      nock('https://api.tinify.com')
+        .post('/shrink')
+        .once()
+        .reply(415, '{"error":"bad","message":"Oops!"}')
+
+      let option = {
+        pattern: 'test/tmp/bad.png',
+        backup: true
+      }
+
+      return tiny.main(option).should.be.fulfilled
+        .then(() => {
+          expect(fs.readFileSync.bind(fs, '.backup/test/tmp/bad.png')).to.throw(Error)
+          tiny.restore()
+        })
+    })
   })
 
   describe('.restore', function () {
@@ -120,21 +138,37 @@ describe('cmd/tiny', function () {
         })
     })
 
-    it('should pass progress for no success bitmaps', function () {
+    it('should exit for empty backup', function () {
+      writeKeys({
+        key: 'xxx'
+      })
+
       nock('https://api.tinify.com')
         .post('/shrink')
         .once()
-        .reply(415, '{"error":"bad","message":"Oops!"}')
+        .reply(201, {}, {
+          Location: 'https://api.tinify.com/some/location'
+        })
 
+      nock('https://api.tinify.com')
+        .get('/some/location')
+        .once()
+        .reply(200, new Buffer(10))
+      
       let option = {
-        pattern: 'test/tmp/bad.png',
-        backup: true
+        pattern: 'test/tmp/1.png',
+        backup: false
       }
 
       return tiny.main(option).should.be.fulfilled
-        .then(() => {
-          expect(fs.readFileSync.bind(fs, '.backup/test/tmp/bad.png')).to.throw(Error)
+        .then(img => {
+          let { size, origin } = img[0]
+          let originSize = origin.size
+
           tiny.restore()
+
+          let buffer = fs.readFileSync('test/tmp/1.png')
+          expect(buffer.length).to.be.equal(size)
         })
     })
   })
