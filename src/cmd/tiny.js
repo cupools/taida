@@ -11,10 +11,15 @@ const BACKUP_FILE = Path.join(BACKUP_PATH, 'db.json')
 
 export default {
   main(options) {
+    let isBitmap = function (p) {
+      return /\.(jpg|jpeg|png)$/.test(p)
+    }
+
     let resources = []
       .concat(options.pattern)
       .map(f => glob.sync(f))
       .reduce((ret, arr) => ret.concat(arr), [])
+      .filter(isBitmap)
 
     log.info(`\n  __taida    version: ${pkg.version}__\n`)
 
