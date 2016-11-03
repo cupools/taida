@@ -4,7 +4,7 @@
 
 Compress images by [https://tinypng.com](https://tinypng.com)
 
-## TODO
+## Todo
 
 - [x] Basic function
 - [x] Basic CLI

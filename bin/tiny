@@ -18,7 +18,7 @@ program
         '  Examples:',
         '',
         '    $ tiny images/banner.png',
-        '    $ tiny **/*.{png,jpg} --dest ./compress',
+        '    $ tiny \'src/**/*.{png,jpg}\' --dest ./compress',
         '    $ tiny-apikey add apikeyfromtinypng',
         ''
       ]
