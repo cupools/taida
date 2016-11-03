@@ -45,7 +45,7 @@ $ tiny --help
   Examples:
 
     $ tiny images/banner.png
-    $ tiny **/*.{png,jpg} --dest ./compress
+    $ tiny 'src/**/*.{png,jpg}' --dest ./compress
     $ tiny-apikey add apikeyfromtinypng
 ```
 
@@ -70,6 +70,8 @@ $ tiny-apikey --help
     -h, --help     output usage information
     -V, --version  output the version number
 ```
+
+![sample](docs/sample.png)
 
 ## Test
 
