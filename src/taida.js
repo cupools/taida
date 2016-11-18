@@ -3,62 +3,50 @@ import tinify from 'tinify'
 import apikey from './apikey'
 
 const taida = function (buffer) {
-  return compress(buffer).catch(err => handleError(compress, err))
+  let _key = tinify.key = apikey.get()
+  let fallback = taida
+
+  return compress(_key, buffer)
+    .then(handleResult(buffer))
+    .catch(handleError(_key, buffer, fallback))
 }
 
-function compress(buffer) {
-  let _key = tinify.key = apikey.get()
-
-  if (!_key) {
-    return Promise.reject(new Error('failed for no usable apikey'))
-  }
-
-  return new Promise(
-    (resolve, reject) => (
+function compress(_key, buffer) {
+  return !_key
+    ? Promise.reject(new Error('failed for no usable apikey'))
+    : new Promise((resolve, reject) => (
       tinify
         .fromBuffer(buffer)
-        .toBuffer((error, data) => handleResult(resolve, reject, buffer, _key, error, data))
+        .toBuffer((error, data) => error ? reject(error) : resolve(data))
     )
   )
 }
 
-function handleResult(resolve, reject, buffer, _key, error, data) {
-  if (error) {
-    reject({
-      error,
+function handleResult(buffer) {
+  return data => Promise.resolve({
+    buffer: data,
+    size: data.length,
+    origin: {
       buffer,
-      _key
-    })
-  } else {
-    resolve({
-      buffer: data,
-      size: data.length,
-      origin: {
-        buffer,
-        size: buffer.length
-      },
-      level: Number((data.length / buffer.length).toFixed(4))
-    })
-  }
+      size: buffer.length
+    },
+    level: Number((data.length / buffer.length).toFixed(4))
+  })
 }
 
-function handleError(fallback, ret) {
-  // dealing with unexpect error
-  if (ret instanceof Error) {
-    return Promise.reject(ret)
+function handleError(_key, buffer, fallback) {
+  return error => {
+    let { message } = error
+
+    if (String.includes(message, 401)) {
+      // Credentials are invalid (HTTP 401/Unauthorized)
+      // should change another apikey and fallback to compress
+      apikey.depress(_key)
+      return fallback(buffer)
+    }
+   
+    return Promise.reject(error)
   }
-
-  let { _key, error, buffer } = ret
-  let { message } = error
-
-  if (String.includes(message, 401)) {
-    // Credentials are invalid (HTTP 401/Unauthorized)
-    // should change another apikey and fallback to compress
-    apikey.depress(_key)
-    return fallback(buffer)
-  }
-
-  return Promise.reject(error)
 }
 
 export default taida
