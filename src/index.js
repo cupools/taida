@@ -1,34 +1,36 @@
 import Path from 'path'
 import fs from 'fs-extra'
 import glob from 'glob'
+import proof from 'proof'
 
 import apikey from './apikey'
 import taida from './taida'
 import lint from './lint'
 import progress from './utils/progress'
 
-export default function (options) {
-  if (!lint(options)) {
-    return Promise.reject(new Error('exit for unexpect options'))
+export default function (opt) {
+  const options = proof.peace(opt, lint)
+
+  if (options.isError) {
+    return Promise.reject(options)
   }
 
-  let { pattern, alternate } = options
-  apikey.alternate = alternate === undefined || !!alternate
-
-  let isBitmap = function (p) {
+  const isBitmap = function (p) {
     return /\.(jpg|jpeg|png)$/.test(p)
   }
 
+  let { pattern, alternate } = options
+  apikey.alternate = alternate
+
   let resources = [...new Set(
-    []
-      .concat(pattern)
+    [].concat(pattern)
       .map(f => glob.sync(f))
       .reduce((ret, arr) => ret.concat(arr), [])
       .filter(isBitmap)
   )]
 
   if (!resources.length) {
-    return Promise.reject(new Error('exit for no matched bitmap'))
+    return Promise.reject(new Error('exit for no matched bitmaps'))
   }
 
   let bar = progress(resources.length, options.progress)
