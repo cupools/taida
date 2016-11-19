@@ -68,8 +68,8 @@ function restore() {
 
   let db = fs.readJSONSync(BACKUP_FILE)
   db.forEach(item => {
-    let { path, backup } = item
-    fs.copySync(backup, path)
+    let { path } = item
+    fs.copySync(item.backup, path)
     log.info('%s has been restore', path)
   })
 }

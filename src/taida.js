@@ -17,7 +17,7 @@ function compress(_key, buffer) {
     : new Promise((resolve, reject) => (
       tinify
         .fromBuffer(buffer)
-        .toBuffer((error, data) => error ? reject(error) : resolve(data))
+        .toBuffer((error, data) => (error ? reject(error) : resolve(data)))
     )
   )
 }
@@ -44,7 +44,7 @@ function handleError(_key, buffer, fallback) {
       apikey.depress(_key)
       return fallback(buffer)
     }
-   
+
     return Promise.reject(error)
   }
 }

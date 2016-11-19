@@ -65,7 +65,7 @@ export default {
   },
 
   get() {
-    let {apikeys} = this
+    let { apikeys } = this
 
     if (this.alternate) {
       let valids = apikeys.filter(item => item.valid)
@@ -95,7 +95,7 @@ export default {
   },
 
   add(args) {
-    let {apikeys} = this
+    let { apikeys } = this
     let keys = apikeys.map(item => item.key)
     let success = []
       .concat(args)
@@ -107,7 +107,7 @@ export default {
           return ret.concat(key)
         },
         []
-      )
+    )
 
     let revise = success
       .map(key => ({
@@ -123,7 +123,7 @@ export default {
   },
 
   use(key) {
-    let {apikeys} = this
+    let { apikeys } = this
     let keys = apikeys.map(item => item.key)
     let index = isNaN(key)
       ? keys.indexOf(key)
@@ -139,7 +139,7 @@ export default {
   },
 
   delete(key) {
-    let {apikeys} = this
+    let { apikeys } = this
     let keys = apikeys.map(item => item.key)
     let index = isNaN(key)
       ? keys.indexOf(key)
