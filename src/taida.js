@@ -3,16 +3,19 @@ import tinify from 'tinify'
 import apikey from './apikey'
 
 const taida = function (buffer) {
-  let _key = tinify.key = apikey.get()
-  let fallback = taida
+  const key = tinify.key = apikey.get()
+  const fallback = () => {
+    apikey.depress(key)
+    return taida(buffer)
+  }
 
-  return compress(_key, buffer)
+  return compress(key, buffer)
     .then(handleResult(buffer))
-    .catch(handleError(_key, buffer, fallback))
+    .catch(handleError(key, buffer, fallback))
 }
 
-function compress(_key, buffer) {
-  return !_key
+function compress(key, buffer) {
+  return !key
     ? Promise.reject(new Error('failed for no usable apikey'))
     : new Promise((resolve, reject) => (
       tinify
@@ -34,15 +37,14 @@ function handleResult(buffer) {
   })
 }
 
-function handleError(_key, buffer, fallback) {
+function handleError(key, buffer, fallback) {
   return error => {
-    let { message } = error
+    const { message } = error
 
     if (String.includes(message, 401)) {
       // Credentials are invalid (HTTP 401/Unauthorized)
       // should change another apikey and fallback to compress
-      apikey.depress(_key)
-      return fallback(buffer)
+      return fallback()
     }
 
     return Promise.reject(error)
