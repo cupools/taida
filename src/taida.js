@@ -1,13 +1,6 @@
 import tinify from 'tinify'
-import apikey from './apikey'
 
-const taida = function (buffer) {
-  const key = apikey.get()
-  const fallback = () => {
-    apikey.depress(key)
-    return taida(buffer)
-  }
-
+const taida = function (key, buffer, fallback) {
   return compress(key, buffer)
     .then(handleResult(buffer))
     .catch(handleError(buffer, fallback))
@@ -41,7 +34,7 @@ function handleError(buffer, fallback) {
   return error => {
     const { message } = error
 
-    if (String.includes(message, 401)) {
+    if (String.includes(message, 401) && fallback) {
       // Credentials are invalid (HTTP 401/Unauthorized)
       // should change another apikey and fallback to compress
       return fallback()

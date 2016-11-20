@@ -23,31 +23,10 @@ program
   })
 
 program
-  .command('use <key>')
-  .description('suggest specified key to be used first')
-  .action(function (key) {
-    apikey.use(key)
-  })
-
-program
   .command('list')
   .description('show apikeys list')
   .action(function () {
     apikey.list()
-  })
-
-program
-  .command('edit')
-  .description('open .apikeys in editor')
-  .action(function () {
-    apikey.edit()
-  })
-
-program
-  .command('supply')
-  .description('open http://tinypng.com to supply api key')
-  .action(function () {
-    apikey.supply()
   })
 
 program

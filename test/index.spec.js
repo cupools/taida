@@ -16,7 +16,6 @@ describe('index', function () {
   const pathTest = 'test/tmp/.apikey'
 
   before(function () {
-    apikey.__apikeys = null
     apikey.__path = pathTest
   })
 
@@ -24,8 +23,10 @@ describe('index', function () {
     apikey.__path = pathProd
   })
 
-  this.beforeEach(function () {
+  beforeEach(function () {
+    fs.emptyDirSync('test/tmp')
     fs.copySync('test/fixtures', 'test/tmp')
+    apikey.__apikeys = null
   })
 
   it('should work', function () {
@@ -53,6 +54,37 @@ describe('index', function () {
     let option = {
       pattern: 'test/tmp/{1,2,bad}.png',
       alternate: true
+    }
+
+    return taida(option).should.be.fulfilled
+  })
+
+  it('should get unauthorized error and success in second try', function () {
+    writeKeys([{
+      key: 'xxx'
+    }, {
+      key: 'yyy'
+    }])
+
+    nock('https://api.tinify.com')
+      .post('/shrink')
+      .once()
+      .reply(401, '{"error":"Unauthorized","message":"Oops!"}')
+
+    nock('https://api.tinify.com')
+      .post('/shrink')
+      .once()
+      .reply(200, {}, {
+        Location: 'https://api.tinify.com/some/location'
+      })
+
+    nock('https://api.tinify.com')
+      .get('/some/location')
+      .once()
+      .reply(200, new Buffer(10))
+
+    let option = {
+      pattern: 'test/tmp/1.png'
     }
 
     return taida(option).should.be.fulfilled

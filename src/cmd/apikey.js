@@ -8,11 +8,6 @@ export default {
 
     log.info('%s bitmaps successful and %s failed', success.length, fail.length)
   },
-  use(key) {
-    return apikey.use(key)
-      ? log.info('set %s to use first', key)
-      : log.info('%s is not exist', key)
-  },
   delete(key) {
     return apikey.delete(key)
       ? log.info('delete %s successful', key)

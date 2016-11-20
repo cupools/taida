@@ -53,7 +53,13 @@ export default function (opt) {
   }
 
   let compressP = function (img) {
-    return taida(img.buffer)
+    const key = apikey.get()
+    const fallback = () => {
+      apikey.depress(key)
+      return taida(apikey.get(), img.buffer, fallback)
+    }
+
+    return taida(key, img.buffer, fallback)
       .then(
         ret => Promise.resolve(Object.assign({}, img, ret))
       )

@@ -11,7 +11,6 @@ describe('apikey', function () {
   const pathTest = 'test/tmp/.apikey'
 
   before(function () {
-    apikey.__apikeys = null
     apikey.__path = pathTest
   })
 
@@ -143,7 +142,6 @@ describe('apikey', function () {
         valid: false
       }])
 
-      expect(apikey.get()).to.equal('xxx')
       expect(apikey.depress('xxx')).to.equal('xxx')
       expect(apikey.get()).to.equal('yyy')
       expect(apikey.depress('yyy')).to.equal('yyy')
@@ -168,21 +166,6 @@ describe('apikey', function () {
       expect(apikey.add('yyy')).to.contain('yyy')
       expect(readKeys()).to.have.property('apikeys')
         .that.to.be.lengthOf(2)
-    })
-  })
-
-  describe('.use', function () {
-    it('should work', function () {
-      expect(apikey.add('xxx')).to.contain('xxx')
-      expect(readKeys()).to.have.deep.property('apikeys[0].key', 'xxx')
-      expect(apikey.add('yyy')).to.contain('yyy')
-      expect(readKeys()).to.have.deep.property('apikeys[1].key', 'yyy')
-      expect(apikey.use('yyy')).to.equal('yyy')
-      expect(readKeys()).to.have.deep.property('apikeys[0].key', 'yyy')
-      expect(apikey.use(1)).to.equal('xxx')
-      expect(readKeys()).to.have.deep.property('apikeys[0].key', 'xxx')
-      expect(apikey.use(2)).to.be.false
-      expect(readKeys()).to.have.deep.property('apikeys[0].key', 'xxx')
     })
   })
 

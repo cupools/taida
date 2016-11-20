@@ -38,21 +38,6 @@ describe('cmd/apikey', function () {
     })
   })
 
-  describe('.use', function () {
-    it('should work', function () {
-      apikey.add('xxx')
-      expect(readKeys()).to.have.deep.property('apikeys[0].key', 'xxx')
-      apikey.add('yyy')
-      expect(readKeys()).to.have.deep.property('apikeys[1].key', 'yyy')
-      apikey.use('yyy')
-      expect(readKeys()).to.have.deep.property('apikeys[0].key', 'yyy')
-      apikey.use(1)
-      expect(readKeys()).to.have.deep.property('apikeys[0].key', 'xxx')
-      apikey.use(2)
-      expect(readKeys()).to.have.deep.property('apikeys[0].key', 'xxx')
-    })
-  })
-
   describe('.delete', function () {
     it('should work', function () {
       writeKeys([{

@@ -74,7 +74,8 @@ export default {
   },
 
   depress(key) {
-    let index = (this.__apikeys || this.apikeys).map(item => item.key).indexOf(key)
+    let apikeys = this.__apikeys || this.apikeys
+    let index = apikeys.map(item => item.key).indexOf(key)
 
     if (!this.__apikeys[index]) {
       return false
@@ -119,22 +120,6 @@ export default {
     this.__write(apikeys.concat(revise))
 
     return success.length ? success : false
-  },
-
-  use(key) {
-    let { apikeys } = this
-    let keys = apikeys.map(item => item.key)
-    let index = isNaN(key)
-      ? keys.indexOf(key)
-      : Number(key)
-
-    if (index == null || !apikeys[index]) {
-      return false
-    }
-
-    this.__apikeys = null
-    this.__write([apikeys[index], ...apikeys.slice(0, index), ...apikeys.slice(index + 1)])
-    return keys[index]
   },
 
   delete(key) {

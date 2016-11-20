@@ -4,33 +4,13 @@ import { expect } from 'chai'
 import fs from 'fs-extra'
 import nock from 'nock'
 
-import './common'
-import { writeKeys } from './utils'
-
 import taida from '../src/taida'
-import apikey from '../src/apikey'
+import './common'
 
 describe('taida', function () {
   this.timeout(1e4)
 
-  const pathProd = apikey.__path
-  const pathTest = 'test/tmp/.apikey'
-
-  before(function () {
-    apikey.__apikeys = null
-    apikey.__path = pathTest
-  })
-
-  after(function () {
-    apikey.__path = pathProd
-  })
-
-  beforeEach(function () {
-    apikey.__apikeys = null
-    writeKeys({})
-  })
-
-  describe('normal', function () {
+  describe('basic', function () {
     let buffer = fs.readFileSync('test/fixtures/0.png')
 
     it('should get correct information', function () {
@@ -46,7 +26,7 @@ describe('taida', function () {
         .once()
         .reply(200, buffer)
 
-      return taida(buffer).should.be.fulfilled
+      return taida('apikey', buffer).should.be.fulfilled
         .then(data => {
           expect(data).to.have.property('buffer')
             .that.to.be.an.instanceof(Buffer)
@@ -66,9 +46,12 @@ describe('taida', function () {
   describe('unexpected apikey', function () {
     let buffer = new Buffer(10)
 
-    it('get correct callback', function () {
-      apikey.depress('xxx')
-      return taida(buffer).should.be.rejectedWith(Error)
+    it('be rejected for no usable apikey', function () {
+      return taida(null, buffer).should.be.rejectedWith(Error)
+        .then(err => {
+          expect(err).to.have.property('message')
+            .that.to.contain('no usable')
+        })
     })
   })
 
@@ -81,7 +64,7 @@ describe('taida', function () {
         .once()
         .reply(415, '{"error":"Unsupported","message":"Oops!"}')
 
-      return taida(buffer).should.be.rejectedWith(Error)
+      return taida('apikey', buffer).should.be.rejectedWith(Error)
     })
   })
 
@@ -94,17 +77,14 @@ describe('taida', function () {
         .once()
         .reply(401, '{"error":"Unauthorized","message":"Oops!"}')
 
-      return taida(buffer).should.be.rejectedWith(Error)
+      return taida('apikey', buffer, taida.bind(null, null, buffer)).should.be.rejectedWith(Error)
         .then(err => {
           expect(err).to.have.property('message')
             .that.to.contain('no usable')
         })
     })
 
-    it('should get unauthorized error and success for second try', function () {
-      apikey.delete('xxx')
-      apikey.add(['xxx', 'yyy'])
-
+    it('should get unauthorized error and success in second try', function () {
       nock('https://api.tinify.com')
         .post('/shrink')
         .once()
@@ -122,7 +102,7 @@ describe('taida', function () {
         .once()
         .reply(200, buffer)
 
-      return taida(buffer).should.be.fulfilled
+      return taida('badapikey', buffer, taida.bind(null, 'apikey', buffer)).should.be.fulfilled
         .then(data => {
           expect(data).to.have.property('buffer')
             .that.to.be.an.instanceof(Buffer)
