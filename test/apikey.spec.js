@@ -34,7 +34,7 @@ describe('apikey', function () {
 
     it('should abort when .apikey has error', function () {
       writeKeys('error')
-      expect(apikey.get()).to.be.null
+      expect(() => apikey.get()).to.throw(/Unexpected token/)
     })
 
     it('should work', function () {

@@ -1,9 +1,7 @@
 import tinify from 'tinify'
-
 import apikey from './apikey'
 
-const taida = function (buffer) {
-  const key = tinify.key = apikey.get()
+const taida = function (buffer, key = apikey.get()) {
   const fallback = () => {
     apikey.depress(key)
     return taida(buffer)
@@ -11,17 +9,18 @@ const taida = function (buffer) {
 
   return compress(key, buffer)
     .then(handleResult(buffer))
-    .catch(handleError(key, buffer, fallback))
+    .catch(handleError(buffer, fallback))
 }
 
 function compress(key, buffer) {
   return !key
     ? Promise.reject(new Error('failed for no usable apikey'))
-    : new Promise((resolve, reject) => (
+    : new Promise((resolve, reject) => {
+      tinify.key = key
       tinify
         .fromBuffer(buffer)
         .toBuffer((error, data) => (error ? reject(error) : resolve(data)))
-    )
+    }
   )
 }
 
@@ -37,7 +36,7 @@ function handleResult(buffer) {
   })
 }
 
-function handleError(key, buffer, fallback) {
+function handleError(buffer, fallback) {
   return error => {
     const { message } = error
 

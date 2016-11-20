@@ -2,10 +2,9 @@ import fs from 'fs-extra'
 import path from 'path'
 import child from 'child_process'
 
-import log from './utils/log'
-
 /**
  * API to control apikey
+ * CRUD and cache
  */
 export default {
   __path: path.join(__dirname, '../', '.apikey'),
@@ -34,10 +33,11 @@ export default {
     let revise = json.map(item => {
       if (!item.valid && now - item.date > 1 * 24 * 3600 * 1e3) {
         needsUpdate = true
-        return Object.assign({}, item, {
+        return {
+          ...item,
           valid: true,
           date: now
-        })
+        }
       }
       return item
     })
@@ -191,11 +191,9 @@ function read(keypath) {
     if (e.errno === -2) {
       // file not exist
       write(keypath, [])
-      log.warn(keypath + ' has built, exec: _$ tiny-apikey add <keys>_')
-    } else {
-      log.error(e.message)
+      return null
     }
-    return null
+    throw e
   }
 }
 
