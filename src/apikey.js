@@ -1,6 +1,5 @@
 import fs from 'fs-extra'
 import path from 'path'
-import child from 'child_process'
 
 /**
  * API to control apikey
@@ -164,14 +163,6 @@ export default {
     return this.apikeys
   },
 
-  edit() {
-    open(this.__path)
-  },
-
-  supply() {
-    open('https://tinypng.com/developers')
-  },
-
   __read() {
     return read(this.__path) || []
   },
@@ -201,21 +192,4 @@ function write(keypath, apikeys) {
   fs.outputJsonSync(keypath, {
     apikeys
   })
-}
-
-function open(p) {
-  let cmd = 'open'
-  switch (process.platform) {
-    case 'wind32':
-      cmd = 'start'
-      break
-    case 'linux':
-      cmd = 'xdg-open'
-      break
-    default:
-      cmd = 'open'
-      break
-  }
-
-  child.exec(cmd + ' ' + p)
 }

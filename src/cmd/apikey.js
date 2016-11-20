@@ -32,11 +32,5 @@ export default {
   },
   clear() {
     return apikey.clear() && log.info('remove all api keys successful. try _$ tiny-apikey add <keys>_')
-  },
-  supply() {
-    return apikey.supply()
-  },
-  edit() {
-    return apikey.edit()
   }
 }

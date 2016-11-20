@@ -1,7 +1,8 @@
 import tinify from 'tinify'
 import apikey from './apikey'
 
-const taida = function (buffer, key = apikey.get()) {
+const taida = function (buffer) {
+  const key = apikey.get()
   const fallback = () => {
     apikey.depress(key)
     return taida(buffer)
