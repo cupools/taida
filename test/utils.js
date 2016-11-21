@@ -3,7 +3,7 @@ import fs from 'fs-extra'
 const pathTest = 'test/tmp/.apikey'
 
 export function writeKeys(keys) {
-  if (keys.split) {
+  if (Array.isArray(keys)) {
     fs.outputFileSync(pathTest, keys)
   } else {
     fs.outputJsonSync(pathTest, {

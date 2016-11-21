@@ -1,4 +1,4 @@
-export default {
+export const lint = {
   pattern: {
     required: true
   },
@@ -9,5 +9,15 @@ export default {
   alternate: {
     def: true,
     coerce: (val) => val === undefined || !!val
+  }
+}
+
+export const apikeyLint = {
+  apikeys: {
+    typeOf: ['string', 'array'],
+    coerce: val => [].concat(val)
+  },
+  alternate: {
+    coerce: val => !!val
   }
 }

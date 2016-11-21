@@ -14,7 +14,10 @@
     "coverage": "cat test/coverage/lcov.info | node_modules/coveralls/bin/coveralls.js",
     "lint": "node node_modules/eslint/bin/eslint.js src"
   },
-  "pre-commit": ["lint", "deploy"],
+  "pre-commit": [
+    "lint",
+    "deploy"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/cupools/taida.git"
@@ -37,6 +40,7 @@
     "commander": "^2.9.0",
     "fs-extra": "^0.30.0",
     "glob": "^7.1.0",
+    "lodash.merge": "^4.6.0",
     "progress": "^1.1.8",
     "proof": "github:cupools/proof",
     "tinify": "^1.3.0"

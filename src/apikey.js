@@ -1,180 +1,138 @@
+import proof from 'proof'
 import fs from 'fs-extra'
-import path from 'path'
+import merge from 'lodash.merge'
+import { apikeyLint } from './lint'
 
 /**
  * API to control apikey
- * CRUD and cache
  */
 export default {
-  __path: path.join(__dirname, '../', '.apikey'),
-  __apikeys: null,
+  __apikeys: [],
   __alternate: true,
-
+  get apikeys() {
+    return this.__apikeys
+  },
+  set apikeys(apikeys) {
+    return this.config({ apikeys, alternate: this.alternate }).__apikeys
+  },
   get alternate() {
     return this.__alternate
   },
-
-  set alternate(val) {
-    this.__alternate = !!val
+  set alternate(alternate) {
+    return this.config({ apikeys: this.apikeys, alternate }).__alternate
   },
-
-  get apikeys() {
-    if (this.__apikeys) {
-      return this.__apikeys
-    }
-
-    let json = this.__read()
-
-    // revise invalid keys
-    let now = Date.now()
-    let needsUpdate = false
-
-    let revise = json.map(item => {
-      if (!item.valid && now - item.date > 1 * 24 * 3600 * 1e3) {
-        needsUpdate = true
-        return {
-          ...item,
-          valid: true,
-          date: now
-        }
-      }
-      return item
-    })
-
-    // update .apikey
-    if (needsUpdate) {
-      this.__write(revise)
-    }
-
-    // save keys to instance, no matter empty array or not
-    this.__apikeys = revise
-    return this.__apikeys
-  },
-
-  set apikeys(keys) {
-    let date = Date.now()
-    let revise = [].concat(keys).map(key => ({
-      date,
-      key,
-      valid: true,
-      temporary: true
+  config(opt) {
+    const options = proof(opt, merge(apikeyLint, {
+      apikeys: { def: this.apikeys },
+      alternate: { def: this.alternate }
     }))
-    this.__apikeys = revise
-    return this.__apikeys
+
+    const { apikeys, alternate } = options
+    const now = Date.now()
+    const newVal = apikeys.map(item => (
+      typeof item === 'string'
+      ? {
+        key: item,
+        valid: true,
+        date: now
+      }
+      : {
+        key: item.key,
+        valid: item.valid,
+        date: item.date
+      }
+    ))
+
+    this.clear()
+    this.__alternate = alternate
+    this.__apikeys.push(...newVal)
+
+    return this
   },
-
   get() {
-    let { apikeys } = this
+    const now = Date.now()
+    const revise = this.apikeys
+      .map(item => (
+        (!item.valid && now - item.date > 1 * 24 * 3600 * 1e3)
+          ? {
+            ...item,
+            valid: true,
+            date: now
+          }
+          : item
+      ))
 
-    if (this.alternate) {
+    const { alternate } = this
+    this.config({ apikeys: revise, alternate })
+
+    const { apikeys } = this
+    if (alternate) {
       let valids = apikeys.filter(item => item.valid)
       return valids.length ? valids[0].key : null
     }
+
     return (apikeys[0] && apikeys[0].valid) ? apikeys[0].key : null
   },
-
   depress(key) {
-    let apikeys = this.__apikeys || this.apikeys
-    let index = apikeys.map(item => item.key).indexOf(key)
+    const { apikeys } = this
+    const index = apikeys.map(item => item.key).indexOf(key)
+    const item = apikeys[index]
 
-    if (!this.__apikeys[index]) {
+    if (!item) {
       return false
-    }
-
-    let item = this.__apikeys[index]
-    if (item.valid) {
+    } else if (item.valid) {
       item.valid = false
       item.date = Date.now()
-
-      if (!item.temporary) {
-        this.__write(this.__apikeys)
-      }
     }
 
     return key
   },
-
   add(args) {
-    let { apikeys } = this
-    let keys = apikeys.map(item => item.key)
-    let success = []
+    const { apikeys } = this
+    const keys = apikeys.map(item => item.key)
+    const success = []
       .concat(args)
       .reduce(
-        (ret, key) => {
-          if (Array.includes(keys, key)) {
-            return ret
-          }
-          return ret.concat(key)
-        },
+        (ret, key) => (Array.includes(keys, key) ? ret : ret.concat(key)),
         []
-    )
+      )
 
-    let revise = success
-      .map(key => ({
-        key,
-        date: Date.now(),
-        valid: true
-      }))
-
-    this.__apikeys = null
-    this.__write(apikeys.concat(revise))
-
-    return success.length ? success : false
-  },
-
-  delete(key) {
-    let { apikeys } = this
-    let keys = apikeys.map(item => item.key)
-    let index = isNaN(key)
-      ? keys.indexOf(key)
-      : Number(key)
-
-    if (index == null || !apikeys[index]) {
+    if (!success.length) {
       return false
     }
 
-    this.__apikeys = null
-    this.__write(apikeys.slice(0, index).concat(apikeys.slice(index + 1)))
-    return keys[index]
+    this.config({ apikeys: apikeys.concat(success) })
+    return success
   },
+  remove(args) {
+    const { apikeys } = this
+    const keys = apikeys.map(item => item.key)
+    const success = []
+      .concat(args)
+      .reduce(
+        (ret, key) => (Array.includes(keys, key) ? ret.concat(key) : ret),
+        []
+      )
 
+    if (!success.length) {
+      return false
+    }
+
+    this.config({ apikeys: apikeys.filter(item => !Array.includes(success, item.key)) })
+    return success
+  },
   clear() {
-    this.__apikeys = null
-    this.__write([])
-    return []
+    this.__apikeys.splice(0, this.__apikeys.length)
+    return this.__apikeys
   },
-
   list() {
     return this.apikeys
   },
-
-  __read() {
-    return read(this.__path) || []
+  fromArray(apikeys) {
+    return this.config({ apikeys })
   },
-
-  __write(apikeys) {
-    return write(this.__path, apikeys.filter(key => !key.temporary))
+  fromJSONFile(filepath, key = 'apikeys') {
+    const json = fs.readJSONSync(filepath)
+    return this.fromArray(json[key])
   }
-}
-
-function read(keypath) {
-  try {
-    let json = fs.readJsonSync(keypath)
-    let { apikeys } = json
-
-    return apikeys
-  } catch (e) {
-    if (e.errno === -2) {
-      // file not exist
-      write(keypath, [])
-      return null
-    }
-    throw e
-  }
-}
-
-function write(keypath, apikeys) {
-  fs.outputJsonSync(keypath, {
-    apikeys
-  })
 }

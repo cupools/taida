@@ -5,8 +5,8 @@ import proof from 'proof'
 
 import apikey from './apikey'
 import taida from './taida'
-import lint from './lint'
 import progress from './utils/progress'
+import { lint } from './lint'
 
 export default function (opt) {
   const options = proof.peace(opt, lint)

@@ -3,82 +3,97 @@
 import { expect } from 'chai'
 import fs from 'fs-extra'
 
-import { writeKeys, readKeys } from './utils'
 import apikey from '../src/apikey'
 
 describe('apikey', function () {
-  const pathProd = apikey.__path
-  const pathTest = 'test/tmp/.apikey'
-
-  before(function () {
-    apikey.__path = pathTest
-  })
-
-  after(function () {
-    apikey.__path = pathProd
-  })
-
   beforeEach(function () {
-    fs.emptyDirSync('test/tmp')
-    apikey.__apikeys = null
+    apikey.clear()
+  })
+
+  describe('.config', function () {
+    it('should set apikeys as string success', function () {
+      expect(apikey.apikeys).to.be.lengthOf(0)
+
+      apikey.config({ apikeys: 'xxx' })
+      expect(apikey.get()).to.equal('xxx')
+    })
+
+    it('should set apikeys as array success', function () {
+      expect(apikey.apikeys).to.be.lengthOf(0)
+
+      apikey.config({ apikeys: ['xxx', 'yyy'] })
+      expect(apikey.get()).to.equal('xxx')
+      expect(apikey.apikeys).to.have.deep.property('[1].key', 'yyy')
+    })
+
+    it('should set apikeys as object success', function () {
+      expect(apikey.apikeys).to.be.lengthOf(0)
+
+      apikey.config({
+        apikeys: [{
+          key: 'xxx',
+          valid: false,
+          date: Date.now()
+        }, {
+          key: 'yyy',
+          valid: true,
+          date: Date.now()
+        }]
+      })
+      expect(apikey.get()).to.equal('yyy')
+      expect(apikey.apikeys).to.have.deep.property('[1].key', 'yyy')
+    })
+
+    it('should set apikeys directly', function () {
+      expect(apikey.apikeys).to.be.lengthOf(0)
+
+      apikey.apikeys = 'xxx'
+      expect(apikey.get()).to.equal('xxx')
+    })
   })
 
   describe('.get', function () {
-    it('should init .apikey when file not found', function () {
-      expect(apikey.get()).to.be.null
-      expect(apikey.get()).to.be.null
-      expect(readKeys()).to.have.property('apikeys')
-        .that.to.be.empty
-    })
-
-    it('should abort when .apikey has error', function () {
-      writeKeys('error')
-      expect(() => apikey.get()).to.throw(/Unexpected token/)
-    })
-
     it('should work', function () {
-      writeKeys({
-        key: 'xxx'
-      })
-      expect(apikey.get()).to.equal('xxx')
+      expect(apikey.get()).to.equal(null)
+      apikey.config({ apikeys: 'xxx' })
       expect(apikey.get()).to.equal('xxx')
     })
 
     it('should get valid key', function () {
-      writeKeys([{
-        key: 'xxx',
-        valid: false
-      }, {
-        key: 'yyy',
-        valid: true
-      }])
+      apikey.config({
+        apikeys: [{
+          key: 'xxx',
+          date: Date.now(),
+          valid: false
+        }, {
+          key: 'yyy',
+          date: Date.now(),
+          valid: true
+        }]
+      })
       expect(apikey.get()).to.equal('yyy')
     })
 
     it('should revise invalid apikey created long ago', function () {
-      writeKeys([{
-        key: 'xxx',
-        date: Date.now() - 2 * 24 * 3600 * 1e3,
-        valid: false
-      }, {
-        key: 'yyy',
-        valid: true
-      }])
+      apikey.config({
+        apikeys: [{
+          key: 'xxx',
+          date: Date.now() - 2 * 24 * 3600 * 1e3,
+          valid: false
+        }, {
+          key: 'yyy',
+          date: Date.now(),
+          valid: true
+        }]
+      })
+
       expect(apikey.get()).to.equal('xxx')
-
-      let json = readKeys()
-
-      expect(json).to.have.deep.property('apikeys[0].valid', true)
-      expect(json).to.have.property('apikeys')
-        .that.to.be.lengthOf(2)
+      expect(apikey.apikeys).to.be.lengthOf(2)
+      expect(apikey.apikeys).to.have.deep.property('[0].valid', true)
     })
 
     it('should get default key when alternate disabled', function () {
-      writeKeys([{
-        key: 'xxx'
-      }, {
-        key: 'yyy'
-      }])
+      apikey.config({ apikeys: ['xxx', 'yyy'] })
 
       apikey.alternate = false
       expect(apikey.get()).to.equal('xxx')
@@ -93,54 +108,25 @@ describe('apikey', function () {
   })
 
   describe('.set', function () {
-    it('should set temporary apikey', function () {
-      writeKeys([])
-      apikey.apikeys = 'xxx'
-      expect(apikey.apikeys).to.have.deep.property('[0].key', 'xxx')
-      expect(apikey.apikeys).to.have.deep.property('[0].temporary', true)
-      apikey.apikeys = ['yyy', 'zzz']
-      expect(apikey.apikeys).to.have.deep.property('[0].key', 'yyy')
-      expect(apikey.apikeys).to.be.lengthOf(2)
-      expect(readKeys()).to.have.property('apikeys')
-        .to.be.empty
-    })
-
-    it('should not write to locate db', function () {
-      writeKeys({
-        key: 'xxx'
-      })
-      expect(apikey.apikeys).to.have.deep.property('[0].key', 'xxx')
-      apikey.apikeys = ['yyy', 'zzz']
-      expect(apikey.apikeys).to.have.deep.property('[0].key', 'yyy')
-      expect(apikey.apikeys).to.have.deep.property('[0].temporary', true)
-      expect(readKeys()).to.have.property('apikeys')
-        .to.be.lengthOf(1)
-    })
-
-    it('should be depress but not write to locate db', function () {
-      writeKeys({
-        key: 'xxx'
-      })
-      apikey.apikeys = 'yyy'
-      expect(apikey.depress('xxx')).to.be.false
-      expect(apikey.depress('yyy')).to.equal('yyy')
-      expect(readKeys()).to.have.property('apikeys')
-        .to.have.deep.property('[0].key', 'xxx')
-    })
   })
 
   describe('.depress', function () {
     it('should work', function () {
-      writeKeys([{
-        key: 'xxx',
-        valid: true
-      }, {
-        key: 'yyy',
-        valid: true
-      }, {
-        key: 'zzz',
-        valid: false
-      }])
+      apikey.config({
+        apikeys: [{
+          key: 'xxx',
+          date: Date.now(),
+          valid: true
+        }, {
+          key: 'yyy',
+          date: Date.now(),
+          valid: true
+        }, {
+          key: 'zzz',
+          date: Date.now(),
+          valid: false
+        }]
+      })
 
       expect(apikey.depress('xxx')).to.equal('xxx')
       expect(apikey.get()).to.equal('yyy')
@@ -149,9 +135,8 @@ describe('apikey', function () {
       expect(apikey.depress('zzz')).to.equal('zzz')
       expect(apikey.depress('undefined')).to.be.false
 
-      let json = readKeys()
-      expect(json.apikeys).to.be.lengthOf(3)
-      expect(json.apikeys).to.have.deep.property('[0].valid')
+      expect(apikey.apikeys).to.be.lengthOf(3)
+      expect(apikey.apikeys).to.have.deep.property('[0].valid')
         .that.to.be.false
     })
   })
@@ -159,60 +144,61 @@ describe('apikey', function () {
   describe('.add', function () {
     it('should work', function () {
       expect(apikey.add('xxx')).to.contain('xxx')
-      expect(readKeys()).to.have.deep.property('apikeys[0].key', 'xxx')
+      expect(apikey.apikeys).to.have.deep.property('[0].key', 'xxx')
       expect(apikey.add('xxx')).to.be.false
-      expect(readKeys()).to.have.property('apikeys')
-        .that.to.be.lengthOf(1)
+      expect(apikey.apikeys).to.be.lengthOf(1)
       expect(apikey.add('yyy')).to.contain('yyy')
-      expect(readKeys()).to.have.property('apikeys')
-        .that.to.be.lengthOf(2)
+      expect(apikey.apikeys).to.be.lengthOf(2)
     })
   })
 
-  describe('.delete', function () {
+  describe('.remove', function () {
     it('should work', function () {
-      writeKeys([{
-        key: 'xxx'
-      }, {
-        key: 'yyy'
-      }, {
-        key: 'zzz'
-      }])
+      apikey.config({ apikeys: ['xxx', 'yyy', 'zzz'] })
 
-      expect(apikey.delete('xxx')).to.equal('xxx')
-      expect(readKeys()).to.have.deep.property('apikeys[0].key', 'yyy')
-      expect(apikey.delete('xxx')).to.be.false
-      expect(apikey.delete(1)).to.equal('zzz')
-      expect(readKeys()).to.have.property('apikeys')
-        .that.to.be.lengthOf(1)
+      expect(apikey.remove('xxx')).to.have.deep.property('[0]', 'xxx')
+      expect(apikey.apikeys).to.have.deep.property('[0].key', 'yyy')
+      expect(apikey.remove('xxx')).to.be.false
+      expect(apikey.remove('zzz')).to.have.deep.property('[0]', 'zzz')
+      expect(apikey.apikeys).to.be.lengthOf(1)
         .that.to.have.deep.property('[0].key', 'yyy')
     })
   })
 
   describe('.list', function () {
     it('should work', function () {
-      writeKeys([{
-        key: 'xxx'
-      }, {
-        key: 'yyy'
-      }, {
-        key: 'zzz'
-      }])
+      apikey.config({ apikeys: ['xxx', 'yyy', 'zzz'] })
+
       expect(apikey.list()).to.be.lengthOf(3)
     })
   })
 
   describe('.clear', function () {
     it('should work', function () {
-      writeKeys([{
-        key: 'xxx'
-      }, {
-        key: 'yyy'
-      }, {
-        key: 'zzz'
-      }])
+      apikey.config({ apikeys: ['xxx', 'yyy', 'zzz'] })
+
       expect(apikey.clear()).to.be.empty
       expect(apikey.get()).to.be.null
+    })
+  })
+
+  describe('.fromArray', function () {
+    it('should work', function () {
+      apikey.fromArray(['xxx', 'yyy'])
+      expect(apikey.get()).to.equal('xxx')
+      expect(apikey.apikeys).to.have.deep.property('[1].key', 'yyy')
+    })
+  })
+
+  describe('.fromJSONFile', function () {
+    before(function () {
+      fs.copySync('test/fixtures/jsonfile.json', 'test/tmp/jsonfile.json')
+    })
+
+    it('should work', function () {
+      apikey.fromJSONFile('test/tmp/jsonfile.json')
+      expect(apikey.get()).to.equal('xxx')
+      expect(apikey.apikeys).to.have.deep.property('[1].key', 'yyy')
     })
   })
 })
