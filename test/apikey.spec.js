@@ -200,5 +200,10 @@ describe('apikey', function () {
       expect(apikey.get()).to.equal('xxx')
       expect(apikey.apikeys).to.have.deep.property('[1].key', 'yyy')
     })
+
+    it('should work with custom key', function () {
+      apikey.fromJSONFile('test/tmp/jsonfile.json', 'tinypng')
+      expect(apikey.get()).to.equal('zzz')
+    })
   })
 })
