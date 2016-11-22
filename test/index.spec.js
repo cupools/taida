@@ -5,67 +5,44 @@ import fs from 'fs-extra'
 import nock from 'nock'
 
 import './common'
-import { writeKeys } from './utils'
 import taida from '../src/index'
 import apikey from '../src/apikey'
 
 describe('index', function () {
   this.timeout(1e4)
 
-  const pathProd = apikey.__path
-  const pathTest = 'test/tmp/.apikey'
-
-  before(function () {
-    apikey.__path = pathTest
-  })
-
-  after(function () {
-    apikey.__path = pathProd
-  })
-
   beforeEach(function () {
     fs.emptyDirSync('test/tmp')
     fs.copySync('test/fixtures', 'test/tmp')
-    apikey.__apikeys = null
+    apikey.clear()
   })
 
-  it('should work', function () {
-    writeKeys({
-      key: 'xxx'
-    })
-
+  it('should work', function (done) {
     nock('https://api.tinify.com')
       .post('/shrink')
-      .twice()
+      .once()
       .reply(201, {}, {
         Location: 'https://api.tinify.com/some/location'
       })
 
     nock('https://api.tinify.com')
-      .post('/shrink')
-      .once()
-      .reply(415, '{"error":"bad","message":"Oops!"}')
-
-    nock('https://api.tinify.com')
       .get('/some/location')
-      .thrice()
+      .once()
       .reply(200, new Buffer(10))
 
     let option = {
-      pattern: 'test/tmp/{1,2,bad}.png',
-      alternate: true
+      pattern: 'test/tmp/1.png',
+      alternate: true,
+      apikeys: 'xxx'
     }
 
-    return taida(option).should.be.fulfilled
+    return taida(option).should.be.fulfilled.then(function (ret) {
+      ret.should.have.deep.property('[0].path', 'test/tmp/1.png')
+      ret.should.not.have.deep.property('[0].error')
+    }).should.notify(done)
   })
 
   it('should get unauthorized error and success in second try', function () {
-    writeKeys([{
-      key: 'xxx'
-    }, {
-      key: 'yyy'
-    }])
-
     nock('https://api.tinify.com')
       .post('/shrink')
       .once()
@@ -84,10 +61,11 @@ describe('index', function () {
       .reply(200, new Buffer(10))
 
     let option = {
-      pattern: 'test/tmp/1.png'
+      pattern: 'test/tmp/1.png',
+      apikeys: ['xxx', 'yyy']
     }
 
-    return taida(option).should.be.fulfilled
+    return taida(option).should.eventually.not.have.deep.property('[0].error')
   })
 
   it('should exit with unexpected option', function () {
@@ -109,10 +87,6 @@ describe('index', function () {
   })
 
   it('should work with specified dest', function () {
-    writeKeys({
-      key: 'xxx'
-    })
-
     nock('https://api.tinify.com')
       .post('/shrink')
       .twice()
@@ -133,20 +107,18 @@ describe('index', function () {
     let option = {
       pattern: 'test/tmp/{1,2,bad}.png',
       alternate: true,
-      dest: 'test/tmp/dest'
+      dest: 'test/tmp/dest',
+      apikeys: ['xxx']
     }
 
     return taida(option).should.be.fulfilled
       .then(() => {
-        expect(fs.readFileSync('test/tmp/dest/1.png')).to.not.be.null
+        expect(fs.existsSync('test/tmp/dest/1.png')).to.be.ok
+        expect(fs.existsSync('test/tmp/dest/bad.png')).to.be.false
       })
   })
 
   it('should work with duplicate file', function () {
-    writeKeys({
-      key: 'xxx'
-    })
-
     nock('https://api.tinify.com')
       .post('/shrink')
       .twice()
@@ -161,20 +133,18 @@ describe('index', function () {
 
     let option = {
       pattern: ['test/tmp/0.png', 'test/tmp/0.png', 'test/tmp/1.png'],
-      alternate: true
+      alternate: true,
+      apikeys: ['xxx']
     }
 
     return taida(option).should.be.fulfilled
       .then(imgs => {
         expect(imgs).to.be.lengthOf(2)
+        expect(imgs.filter(item => item.error)).to.be.lengthOf(0)
       })
   })
 
   it('should work with progress', function () {
-    writeKeys({
-      key: 'xxx'
-    })
-
     nock('https://api.tinify.com')
       .post('/shrink')
       .once()
@@ -189,9 +159,10 @@ describe('index', function () {
 
     let option = {
       pattern: 'test/tmp/0.png',
-      progress: true
+      progress: true,
+      apikeys: 'xxx'
     }
 
-    return taida(option).should.be.fulfilled
+    return taida(option).should.eventually.not.have.deep.property('[0].error')
   })
 })

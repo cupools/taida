@@ -15,7 +15,7 @@ export const lint = {
 export const apikeyLint = {
   apikeys: {
     typeOf: ['string', 'array'],
-    coerce: val => [].concat(val)
+    coerce: val => (val ? [].concat(val) : [])
   },
   alternate: {
     coerce: val => !!val

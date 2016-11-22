@@ -15,19 +15,16 @@ export default function (opt) {
     return Promise.reject(options)
   }
 
-  const isBitmap = function (p) {
-    return /\.(jpg|jpeg|png)$/.test(p)
-  }
+  const { pattern, alternate, apikeys, dest } = options
+  apikey.config({ alternate, apikeys })
 
-  const { pattern, alternate } = options
-  apikey.alternate = alternate
-
-  const resources = [...new Set(
+  const isBitmap = p => /\.(jpg|jpeg|png)$/.test(p)
+  const resources = Array.from(new Set(
     [].concat(pattern)
       .map(f => glob.sync(f))
       .reduce((ret, arr) => ret.concat(arr), [])
       .filter(isBitmap)
-  )]
+  ))
 
   if (!resources.length) {
     return Promise.reject(new Error('exit for no matched bitmaps'))
@@ -35,63 +32,52 @@ export default function (opt) {
 
   const bar = progress(resources.length, options.progress)
 
-  const readFile = function (path) {
-    return fs.readFileSync(path)
-  }
-
-  const writeFile = function (path, buffer) {
-    return fs.outputFileSync(path, buffer, {
-      encoding: 'binary'
-    })
-  }
-
-  const wrapImg = function (path) {
-    return {
-      path,
-      buffer: readFile(path)
-    }
-  }
+  const readFile = path => fs.readFileSync(path)
+  const writeFile = (path, buffer) => fs.outputFileSync(path, buffer, { encoding: 'binary' })
+  const wrapImg = path => ({
+    path,
+    buffer: readFile(path)
+  })
 
   const compressP = function (img) {
     const key = apikey.get()
+    const buffer = img.buffer
     const fallback = () => {
       apikey.depress(key)
-      return taida(apikey.get(), img.buffer, fallback)
+      return taida(apikey.get(), buffer, fallback)
     }
 
-    return taida(key, img.buffer, fallback)
+    return taida(key, buffer, fallback)
       .then(
         ret => Promise.resolve(Object.assign({}, img, ret))
       )
       .catch(
         error => Promise.resolve({
-          error,
-          ...img
+          ...img,
+          error
         })
       )
   }
 
-  const outputP = function (dest) {
-    return img => {
-      bar.tick()
+  const outputP = function (outputDir, img) {
+    bar.tick()
 
-      if (img.error) {
-        return Promise.resolve(img)
-      }
-
-      const { path, buffer } = img
-      const output = dest ? Path.join(dest, Path.basename(path)) : path
-
-      writeFile(output, buffer)
-
+    if (img.error) {
       return Promise.resolve(img)
     }
+
+    const { path, buffer } = img
+    const output = outputDir ? Path.join(outputDir, Path.basename(path)) : path
+    writeFile(output, buffer)
+
+    return Promise.resolve(img)
   }
 
   const resourcesP = resources
     .map(wrapImg)
-    .map(compressP)
-    .map(p => p.then(outputP(options.dest)))
+    .map(
+      img => compressP(img).then(outputP.bind(null, dest))
+    )
 
   return Promise
     .all(resourcesP)

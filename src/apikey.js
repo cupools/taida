@@ -1,6 +1,7 @@
 import proof from 'proof'
 import fs from 'fs-extra'
 import merge from 'lodash.merge'
+import EventEmitter from 'events'
 import { apikeyLint } from './lint'
 
 /**
@@ -9,6 +10,7 @@ import { apikeyLint } from './lint'
 export default {
   __apikeys: [],
   __alternate: true,
+  __eventEmitter: new EventEmitter(),
   get apikeys() {
     return this.__apikeys
   },
@@ -29,41 +31,37 @@ export default {
 
     const { apikeys, alternate } = options
     const now = Date.now()
-    const newVal = apikeys.map(item => (
-      typeof item === 'string'
-      ? {
-        key: item,
-        valid: true,
-        date: now
+
+    const newVal = apikeys.map(
+      item => {
+        if (typeof item === 'string') {
+          return {
+            key: item,
+            valid: true,
+            date: now
+          }
+        } else if (!item.valid && now - item.date > 1 * 24 * 3600 * 1e3) {
+          return {
+            key: item.key,
+            valid: true,
+            date: now
+          }
+        }
+        return {
+          key: item.key,
+          valid: item.valid,
+          date: item.date
+        }
       }
-      : {
-        key: item.key,
-        valid: item.valid,
-        date: item.date
-      }
-    ))
+    )
 
     this.clear()
     this.__alternate = alternate
     this.__apikeys.push(...newVal)
-
+    this.__eventEmitter.emit('config', this.__apikeys)
     return this
   },
   get() {
-    const now = Date.now()
-    const revise = this.apikeys
-      .map(item => (
-        (!item.valid && now - item.date > 1 * 24 * 3600 * 1e3)
-          ? {
-            ...item,
-            valid: true,
-            date: now
-          }
-          : item
-      ))
-
-    this.config({ apikeys: revise })
-
     const { apikeys, alternate } = this
     if (alternate) {
       let valids = apikeys.filter(item => item.valid)
@@ -82,6 +80,7 @@ export default {
     } else if (item.valid) {
       item.valid = false
       item.date = Date.now()
+      this.__eventEmitter.emit('depress', key, this.__apikeys)
     }
 
     return key
