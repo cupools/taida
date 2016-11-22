@@ -19,7 +19,7 @@ export default {
     return this.__alternate
   },
   set alternate(alternate) {
-    return this.config({ apikeys: this.apikeys, alternate }).__alternate
+    return this.config({ alternate }).__alternate
   },
   config(opt) {
     const options = proof(opt, merge(apikeyLint, {
@@ -62,10 +62,9 @@ export default {
           : item
       ))
 
-    const { alternate } = this
-    this.config({ apikeys: revise, alternate })
+    this.config({ apikeys: revise })
 
-    const { apikeys } = this
+    const { apikeys, alternate } = this
     if (alternate) {
       let valids = apikeys.filter(item => item.valid)
       return valids.length ? valids[0].key : null

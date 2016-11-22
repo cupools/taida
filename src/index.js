@@ -19,10 +19,10 @@ export default function (opt) {
     return /\.(jpg|jpeg|png)$/.test(p)
   }
 
-  let { pattern, alternate } = options
+  const { pattern, alternate } = options
   apikey.alternate = alternate
 
-  let resources = [...new Set(
+  const resources = [...new Set(
     [].concat(pattern)
       .map(f => glob.sync(f))
       .reduce((ret, arr) => ret.concat(arr), [])
@@ -33,26 +33,26 @@ export default function (opt) {
     return Promise.reject(new Error('exit for no matched bitmaps'))
   }
 
-  let bar = progress(resources.length, options.progress)
+  const bar = progress(resources.length, options.progress)
 
-  let readFile = function (path) {
+  const readFile = function (path) {
     return fs.readFileSync(path)
   }
 
-  let writeFile = function (path, buffer) {
+  const writeFile = function (path, buffer) {
     return fs.outputFileSync(path, buffer, {
       encoding: 'binary'
     })
   }
 
-  let wrapImg = function (path) {
+  const wrapImg = function (path) {
     return {
       path,
       buffer: readFile(path)
     }
   }
 
-  let compressP = function (img) {
+  const compressP = function (img) {
     const key = apikey.get()
     const fallback = () => {
       apikey.depress(key)
@@ -71,7 +71,7 @@ export default function (opt) {
       )
   }
 
-  let outputP = function (dest) {
+  const outputP = function (dest) {
     return img => {
       bar.tick()
 
@@ -79,8 +79,8 @@ export default function (opt) {
         return Promise.resolve(img)
       }
 
-      let { path, buffer } = img
-      let output = dest ? Path.join(dest, Path.basename(path)) : path
+      const { path, buffer } = img
+      const output = dest ? Path.join(dest, Path.basename(path)) : path
 
       writeFile(output, buffer)
 
@@ -88,7 +88,7 @@ export default function (opt) {
     }
   }
 
-  let resourcesP = resources
+  const resourcesP = resources
     .map(wrapImg)
     .map(compressP)
     .map(p => p.then(outputP(options.dest)))
