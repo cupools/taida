@@ -2,6 +2,7 @@ import Path from 'path'
 import fs from 'fs-extra'
 import glob from 'glob'
 
+import apikey from './apikey'
 import main from '../index'
 import log from '../utils/log'
 import pkg from '../../package.json'
@@ -11,21 +12,25 @@ const BACKUP_FILE = Path.join(BACKUP_PATH, 'db.json')
 
 export default {
   main(options) {
-    let isBitmap = function (p) {
-      return /\.(jpg|jpeg|png)$/.test(p)
-    }
-
-    let resources = []
-      .concat(options.pattern)
-      .map(f => glob.sync(f))
-      .reduce((ret, arr) => ret.concat(arr), [])
-      .filter(isBitmap)
+    const isBitmap = p => /\.(jpg|jpeg|png)$/.test(p)
+    const resources = Array.from(new Set(
+      [].concat(options.pattern)
+        .map(f => glob.sync(f))
+        .reduce((ret, arr) => ret.concat(arr), [])
+        .filter(isBitmap)
+    ))
 
     log.info(`\n  __taida    version: ${pkg.version}__\n`)
 
     if (resources.length) {
       log.info(`Found ${resources.length} bitmaps and starting...`)
     }
+
+    // init apikeys from json file .apikey
+    // listen apikey change and update locate key
+    // only work for cli
+    apikey.initKeys()
+    apikey.addListener()
 
     return main(options)
       .then(imgs => backup(imgs, options.backup))
@@ -38,11 +43,11 @@ export default {
 }
 
 function statistics(imgs, detail) {
-  let success = imgs.filter(img => !img.error)
-  let fails = imgs.filter(img => !!img.error)
-  let total = success.reduce((ret, img) => ret + img.size, 0)
-  let originTotal = success.reduce((ret, img) => ret + img.origin.size, 0)
-  let fix = num => (num / 1000).toFixed(2)
+  const success = imgs.filter(img => !img.error)
+  const fails = imgs.filter(img => !!img.error)
+  const total = success.reduce((ret, img) => ret + img.size, 0)
+  const originTotal = success.reduce((ret, img) => ret + img.origin.size, 0)
+  const fix = num => (num / 1000).toFixed(2)
 
   log.info(`Compress ___${success.length} bitmaps___ successful and ${fails.length} fails.`)
 
@@ -66,9 +71,9 @@ function restore() {
     return
   }
 
-  let db = fs.readJSONSync(BACKUP_FILE)
+  const db = fs.readJSONSync(BACKUP_FILE)
   db.forEach(item => {
-    let { path } = item
+    const { path } = item
     fs.copySync(item.backup, path)
     log.info('%s has been restore', path)
   })
@@ -81,13 +86,13 @@ function backup(imgs, isBackup) {
     return Promise.resolve(imgs)
   }
 
-  let success = imgs.filter(img => !img.error)
-  let db = success.reduce(
+  const success = imgs.filter(img => !img.error)
+  const db = success.reduce(
     (ret, img, index) => {
-      let { path, origin } = img
-      let basename = index + Path.basename(path)
-      let output = Path.resolve(BACKUP_PATH, basename)
-      let option = { encoding: 'binary' }
+      const { path, origin } = img
+      const basename = index + Path.basename(path)
+      const output = Path.resolve(BACKUP_PATH, basename)
+      const option = { encoding: 'binary' }
 
       fs.outputFileSync(output, origin.buffer, option)
 

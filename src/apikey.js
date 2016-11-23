@@ -70,6 +70,9 @@ export default {
 
     return (apikeys[0] && apikeys[0].valid) ? apikeys[0].key : null
   },
+  list() {
+    return this.apikeys
+  },
   depress(key) {
     const { apikeys } = this
     const index = apikeys.map(item => item.key).indexOf(key)
@@ -122,9 +125,6 @@ export default {
   clear() {
     this.__apikeys.splice(0, this.__apikeys.length)
     return this.__apikeys
-  },
-  list() {
-    return this.apikeys
   },
   fromArray(apikeys) {
     return this.config({ apikeys })

@@ -8,21 +8,20 @@ import apikeyCore from '../src/apikey'
 import apikey from '../src/cmd/apikey'
 
 describe('cmd/apikey', function () {
-  const pathProd = apikeyCore.__path
+  const pathProd = apikey.__path
   const pathTest = 'test/tmp/.apikey'
 
   before(function () {
-    apikeyCore.__apikeys = null
-    apikeyCore.__path = pathTest
+    apikey.__path = pathTest
   })
 
   after(function () {
-    apikeyCore.__path = pathProd
+    apikey.__path = pathProd
   })
 
   beforeEach(function () {
     fs.emptyDirSync('test/tmp')
-    apikeyCore.__apikeys = null
+    apikeyCore.clear()
   })
 
   describe('.add', function () {
