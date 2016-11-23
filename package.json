@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "rm -rf lib && node node_modules/babel-cli/bin/babel src -d lib -D -w",
     "deploy": "rm -rf lib && node node_modules/babel-cli/bin/babel src -d lib -D",
-    "test": "cross-env NODE_ENV=dev node_modules/.bin/nyc --reporter lcov --reporter text --report-dir test/coverage --require babel-core/register node_modules/.bin/mocha test/*.spec.js -w && rm -rf .nyc_output",
+    "test": "cross-env NODE_ENV=testing node_modules/.bin/nyc --reporter lcov --reporter text --report-dir test/coverage --require babel-core/register node_modules/.bin/mocha test/*.spec.js && rm -rf .nyc_output",
     "coverage": "cat test/coverage/lcov.info | node_modules/coveralls/bin/coveralls.js",
     "lint": "node node_modules/eslint/bin/eslint.js src"
   },

@@ -10,6 +10,10 @@ import './common'
 describe('taida', function () {
   this.timeout(1e4)
 
+  beforeEach(function () {
+    nock.cleanAll()
+  })
+
   describe('basic', function () {
     let buffer = fs.readFileSync('test/fixtures/0.png')
 
