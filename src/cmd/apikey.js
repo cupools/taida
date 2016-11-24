@@ -10,7 +10,7 @@ export default {
     const success = apikey.add(keys) || []
     const fail = [].concat(keys).filter(key => !Array.includes(success, key))
 
-    if (success) {
+    if (success.length) {
       this.__write(apikey.apikeys)
     }
 
@@ -21,7 +21,7 @@ export default {
     const success = apikey.remove(keys) || []
     const fail = [].concat(keys).filter(key => !Array.includes(success, key))
 
-    if (success) {
+    if (success.length) {
       this.__write(apikey.apikeys)
     }
 

@@ -89,4 +89,26 @@ describe('cmd/apikey', function () {
         .that.to.be.empty
     })
   })
+
+  describe('.initKeys', function () {
+    it('should work', function () {
+      writeKeys([{
+        key: 'xxx'
+      }])
+
+      apikey.initKeys()
+      expect(apikeyCore).to.have.deep.property('apikeys[0].key', 'xxx')
+    })
+
+    it('should throw exception with error in .apikey', function () {
+      fs.outputFileSync(pathTest, 'error')
+      expect(() => apikey.initKeys()).to.throw(Error)
+    })
+
+    it('should build .apikey when necessary', function () {
+      apikey.initKeys()
+      expect(readKeys()).to.have.property('apikeys')
+        .that.to.be.empty
+    })
+  })
 })

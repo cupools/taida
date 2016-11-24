@@ -37,8 +37,6 @@ describe('index', function () {
       apikeys: 'xxx'
     }
 
-    console.log(123)
-
     return taida(option).should.be.fulfilled.then(function (ret) {
       ret.should.have.deep.property('[0].path', 'test/tmp/1.png')
       ret.should.not.have.deep.property('[0].error')
