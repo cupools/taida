@@ -16,7 +16,7 @@ Compress images by [https://tinypng.com](https://tinypng.com)
 - [x] Remove promise in apikey's method
 - [x] Temporary apikey
 - [x] Bug in backup path
-- [ ] Refactor
+- [x] Refactor
 - [ ] Webpack loader
 - [ ] Documentation
 - [ ] Publish npm
