@@ -1,4 +1,4 @@
-import proof from 'proof'
+import checkin from 'checkin'
 import fs from 'fs-extra'
 import merge from 'lodash.merge'
 import EventEmitter from 'events'
@@ -24,7 +24,7 @@ export default {
     return this.config({ alternate }).__alternate
   },
   config(opt) {
-    const options = proof(opt, merge(apikeyLint, {
+    const options = checkin(opt, merge(apikeyLint, {
       apikeys: { def: this.apikeys },
       alternate: { def: this.alternate }
     }))

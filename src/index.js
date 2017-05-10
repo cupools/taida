@@ -1,7 +1,7 @@
 import Path from 'path'
 import fs from 'fs-extra'
 import glob from 'glob'
-import proof from 'proof'
+import checkin from 'checkin'
 
 import apikey from './apikey'
 import taida from './taida'
@@ -9,10 +9,12 @@ import progress from './utils/progress'
 import { lint } from './lint'
 
 export default function (opt) {
-  const options = proof.peace(opt, lint)
+  let options = null
 
-  if (options.isError) {
-    return Promise.reject(options)
+  try {
+    options = checkin(opt, lint)
+  } catch (e) {
+    return Promise.reject(e)
   }
 
   const { pattern, alternate, apikeys, dest } = options
