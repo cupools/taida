@@ -3,10 +3,11 @@ import fs from 'fs-extra'
 import glob from 'glob'
 import checkin from 'checkin'
 
+import './utils/progress'
 import apikey from './apikey'
 import taida from './taida'
-import progress from './utils/progress'
 import { lint } from './lint'
+import emitter from './utils/emitter'
 
 export default function (opt) {
   let options = null
@@ -32,7 +33,7 @@ export default function (opt) {
     return Promise.reject(new Error('exit for no matched bitmaps'))
   }
 
-  const bar = progress(resources.length, options.progress)
+  if (options.progress) emitter.emit('bar.init', resources.length)
 
   const readFile = path => fs.readFileSync(path)
   const writeFile = (path, buffer) => fs.outputFileSync(path, buffer, { encoding: 'binary' })
@@ -62,7 +63,7 @@ export default function (opt) {
   }
 
   const outputP = function (outputDir, img) {
-    bar.tick()
+    emitter.emit('bar.progress')
 
     if (img.error) {
       return Promise.resolve(img)

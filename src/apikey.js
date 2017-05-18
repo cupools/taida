@@ -98,9 +98,7 @@ export default {
         []
       )
 
-    if (!success.length) {
-      return false
-    }
+    if (!success.length) return false
 
     this.config({ apikeys: apikeys.concat(success) })
     return success
@@ -115,9 +113,7 @@ export default {
         []
       )
 
-    if (!success.length) {
-      return false
-    }
+    if (!success.length) return false
 
     this.config({ apikeys: apikeys.filter(item => !Array.includes(success, item.key)) })
     return success

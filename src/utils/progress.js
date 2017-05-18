@@ -1,20 +1,19 @@
 import Progress from 'progress'
+import emitter from './emitter'
 
-export default function (total, display) {
-  if (!display) {
-    return {
-      tick() {}
-    }
-  }
+let bar = null
 
-  const bar = new Progress('  Compression [:bar] :percent', {
+emitter.on('bar.init', total => {
+  bar = new Progress('  Compression [:bar] :percent', {
     incomplete: ' ',
     width: 20,
     total
   })
 
-  // show the process bar immediately
   bar.tick(0)
+})
 
-  return bar
-}
+emitter.on('bar.progress', () => {
+  if (!bar) return
+  bar.tick()
+})
