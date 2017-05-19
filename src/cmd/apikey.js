@@ -2,6 +2,7 @@ import path from 'path'
 import fs from 'fs-extra'
 import apikey from '../apikey'
 import log from '../utils/log'
+import emitter from '../utils/emitter'
 
 export default {
   __path: path.join(__dirname, '../../', '.apikey'),
@@ -48,9 +49,8 @@ export default {
     log.info('delete %s api keys successful. try _$ tiny-apikey add <keys>_', apikey.apikeys.length)
   },
   addListener() {
-    const emitter = apikey.__eventEmitter
-    emitter.on('config', apikeys => this.__write(apikeys))
-    emitter.on('depress', (key, apikeys) => this.__write(apikeys))
+    emitter.on('apikey.config', apikeys => this.__write(apikeys))
+    emitter.on('apikey.depress', (key, apikeys) => this.__write(apikeys))
   },
   initKeys() {
     const apikeys = this.__read()

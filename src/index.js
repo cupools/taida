@@ -37,10 +37,7 @@ export default function (opt) {
 
   const readFile = path => fs.readFileSync(path)
   const writeFile = (path, buffer) => fs.outputFileSync(path, buffer, { encoding: 'binary' })
-  const wrapImg = path => ({
-    path,
-    buffer: readFile(path)
-  })
+  const wrapImg = path => ({ path, buffer: readFile(path) })
 
   const compressP = function (img) {
     const key = apikey.get()
@@ -78,9 +75,7 @@ export default function (opt) {
 
   const resourcesP = resources
     .map(wrapImg)
-    .map(
-      img => compressP(img).then(outputP.bind(null, dest))
-    )
+    .map(img => compressP(img).then(outputP.bind(null, dest)))
 
   return Promise
     .all(resourcesP)

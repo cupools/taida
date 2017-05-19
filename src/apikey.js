@@ -1,8 +1,8 @@
 import checkin from 'checkin'
 import fs from 'fs-extra'
 import merge from 'lodash.merge'
-import EventEmitter from 'events'
 import { apikeyLint } from './lint'
+import emitter from './utils/emitter'
 
 /**
  * API to control apikey
@@ -10,7 +10,6 @@ import { apikeyLint } from './lint'
 export default {
   __apikeys: [],
   __alternate: true,
-  __eventEmitter: new EventEmitter(),
   get apikeys() {
     return this.__apikeys
   },
@@ -58,7 +57,7 @@ export default {
     this.clear()
     this.__alternate = alternate
     this.__apikeys.push(...newVal)
-    this.__eventEmitter.emit('config', this.__apikeys)
+    emitter.emit('apikey.config', this.__apikeys)
     return this
   },
   get() {
@@ -83,7 +82,7 @@ export default {
     } else if (item.valid) {
       item.valid = false
       item.date = Date.now()
-      this.__eventEmitter.emit('depress', key, this.__apikeys)
+      emitter.emit('apikey.depress', key, this.__apikeys)
     }
 
     return key
