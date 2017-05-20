@@ -33,17 +33,20 @@
   "bugs": {
     "url": "https://github.com/cupools/taida/issues"
   },
+  "engines": {
+    "node": ">=4.0.0"
+  },
   "homepage": "https://github.com/cupools/taida#readme",
   "dependencies": {
     "babel-runtime": "^6.11.6",
+    "checkin": "^0.0.1",
     "colors": "^1.1.2",
     "commander": "^2.9.0",
     "fs-extra": "^0.30.0",
     "glob": "^7.1.0",
     "lodash.merge": "^4.6.0",
     "progress": "^1.1.8",
-    "checkin": "^0.0.1",
-    "tinify": "^1.3.0"
+    "tinify": "^1.5.0"
   },
   "devDependencies": {
     "babel": "^6.5.2",

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-var program = require('commander')
-var PKG = require('../package.json')
-var tiny = require('../lib/cmd/tiny').default
+let program = require('commander')
+let PKG = require('../package.json')
+let tiny = require('../lib/cmd/tiny').default
 
 program
   .version(PKG.version)
@@ -36,19 +36,19 @@ program
 program.parse(process.argv)
 
 if (!program.args[0] || program.args[0].constructor !== program.Command) {
-  var pattern = program.args.length ? program.args : ['*.png']
-  var dest = program.dest
-  var detail = !!program.detail
-  var alternate = !!program.alternate
-  var backup = !!program.backup
-  var progress = !!program.progress
+  let pattern = program.args.length ? program.args : ['*.png']
+  let dest = program.dest
+  let detail = !!program.detail
+  let alternate = !!program.alternate
+  let backup = !!program.backup
+  let progress = !!program.progress
 
   tiny.main({
-    pattern: pattern,
-    dest: dest,
-    detail: detail,
-    alternate: alternate,
-    backup: backup,
-    progress: progress
+    pattern,
+    dest,
+    detail,
+    alternate,
+    backup,
+    progress
   })
 }

@@ -17,7 +17,8 @@ Compress images by [https://tinypng.com](https://tinypng.com)
 - [x] Temporary apikey
 - [x] Bug in backup path
 - [x] Refactor
-- [ ] Webpack loader
+- [ ] <s>Webpack loader</s>
+- [ ] Automatic register
 - [ ] Documentation
 - [ ] Publish npm
 

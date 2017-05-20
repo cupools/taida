@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-var program = require('commander')
-var PKG = require('../package.json')
-var apikey = require('../lib/cmd/apikey').default
+let program = require('commander')
+let PKG = require('../package.json')
+let apikey = require('../lib/cmd/apikey').default
 
 program
   .version(PKG.version)
